@@ -11,7 +11,7 @@ export default function scheduleReminders() {
     const reminders = await getRemindersToTrigger();
 
     reminders.forEach(async (reminder) => {
-      const message = `Reminder: ${reminder.task} at ${new Date(reminder.datetime).toLocaleTimeString()}`;
+      const message = `Reminder: ${reminder.task} in the coming 10 minutes dont miss it.}`;
 
       try {
         // WhatsApp message

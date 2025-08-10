@@ -4,7 +4,7 @@ function page() {
   return (
     <div>
       hello page 
-      
+      ccc
     </div>
   )
 }

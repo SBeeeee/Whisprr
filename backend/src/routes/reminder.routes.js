@@ -1,10 +1,11 @@
 import express from "express";
 import { createReminders } from "../controllers/reminder.controller.js";
 import scheduleReminders from "../utils/scheduler.js";
+import { verifyUser } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/", createReminders);
+router.post("/",verifyUser, createReminders);
 router.get("/", async (req, res) => {
     try {
       await scheduleReminders(); // Trigger the reminder logic

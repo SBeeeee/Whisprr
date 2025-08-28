@@ -2,8 +2,8 @@ import { registerUser, loginUser, getUserById } from "../Services/user.services.
 
 export const register = async (req, res) => {
     try {
-        const user = await registerUser(req.body);
-        res.status(201).json({ message: "User registered", user });
+        const {user,token} = await registerUser(req.body);
+        res.status(201).json({ message: "User registered", user,token });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -21,7 +21,7 @@ export const login = async (req, res) => {
                 maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
             })
             .status(200)
-            .json({ message: "Login successful", user });
+            .json({ message: "Login successful", user,token });
     } catch (err) {
         res.status(401).json({ error: err.message });
     }

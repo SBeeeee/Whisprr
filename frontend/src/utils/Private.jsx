@@ -20,6 +20,7 @@ export default function PrivateRoute({children}){
               if (!user || Object.keys(user).length === 0) {
                 const fetchedUser = await checkAuth(dispatch);
                 if (!fetchedUser) {
+                  alert("please login")
                   router.replace("/auth/login");
                   return;
                 }

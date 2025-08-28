@@ -5,7 +5,7 @@ import axiosInstance from "./axiosInstance"
 export const checkAuth =async(dispatch)=>{
 try{
     const response =await axiosInstance.get("/users/me");
-    if(response?.data?.success){
+    if(response){
         dispatch(setUser(response.data));
         return response.data;
        

@@ -1,11 +1,10 @@
-import Hero from '@/components/Hero'
 import React from 'react'
+import LoginForm from '../components/LoginForm'
 
 function page() {
   return (
     <div>
-
-<Hero/>
+      <LoginForm/>
     </div>
   )
 }

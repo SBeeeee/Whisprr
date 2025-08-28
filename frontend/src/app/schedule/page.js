@@ -1,11 +1,10 @@
-import Hero from '@/components/Hero'
 import React from 'react'
+import CalendarView from './CalenderView'
 
 function page() {
   return (
     <div>
-
-<Hero/>
+      <CalendarView/>
     </div>
   )
 }

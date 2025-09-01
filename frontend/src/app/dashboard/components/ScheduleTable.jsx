@@ -1,5 +1,6 @@
+"use client"
 import { Calendar, Clock3, CheckCircle2 } from "lucide-react";
-
+import {useSelector,useDispatch} from "react-redux";
 export default function ScheduleTable({ items = [], onToggleDone, full = false }) {
   return (
     <div className={`overflow-y-auto ${full ? "max-h-[65vh]" : "max-h-80"} custom-scroll`}>

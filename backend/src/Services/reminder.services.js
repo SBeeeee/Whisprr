@@ -29,3 +29,7 @@ export const getRemindersToTrigger = async () => {
 export const markAsReminded = async (id) => {
     await Reminder.findByIdAndUpdate(id, { reminded: true });
   };
+
+export const getuserReminders =async(userId)=>{
+  return Reminder.find({user:userId}).sort({datetime:1});
+}

@@ -15,7 +15,7 @@ export default function TasksView({ tasks, toggleTaskDone, setOpenTask }) {
         </button>
       </div>
       <Card className="p-6">
-        <TasksList items={tasks} onToggleDone={toggleTaskDone} />
+        <TasksList items={tasks} onToggleDone={toggleTaskDone}/>
       </Card>
     </div>
   );

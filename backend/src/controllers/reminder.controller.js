@@ -1,4 +1,4 @@
-import { createReminder,getRemindersToTrigger,markAsReminded } from "../Services/reminder.services.js";
+import { createReminder,getuserReminders } from "../Services/reminder.services.js";
 
 export const createReminders = async (req, res) => {
     try {
@@ -16,3 +16,16 @@ export const createReminders = async (req, res) => {
     }
   };
 
+export const getReminders =async(req,res)=>{
+  try{
+      const reminders=await getuserReminders(req.id);
+      res.status(200).json({
+        success:true,
+        data:reminders,
+      }
+      )
+  }
+  catch(error){
+    res.status(500).json({success:false,message:error.message});
+  }
+}

@@ -1,5 +1,5 @@
 import express from "express";
-import { createReminders } from "../controllers/reminder.controller.js";
+import { createReminders,getReminders} from "../controllers/reminder.controller.js";
 import scheduleReminders from "../utils/scheduler.js";
 import { verifyUser } from "../middlewares/auth.middleware.js";
 
@@ -15,6 +15,6 @@ router.get("/", async (req, res) => {
       res.status(500).send("Error while checking reminders");
     }
   });
-  
+router.get("/reminders",verifyUser,getReminders) ;
 
 export default router;

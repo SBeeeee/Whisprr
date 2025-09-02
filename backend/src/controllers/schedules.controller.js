@@ -14,7 +14,7 @@ export async function createScheduleController(req, res) {
 
 export async function getUserSchedule(req,res){
     try {
-        const schedules=await getSchedulesForUser(req._id);
+        const schedules=await getSchedulesForUser(req.id);
         res.status(200).json({success:true,data:schedules});
     } catch (error) {
         res.status(500).json({success:false,message:error.message});

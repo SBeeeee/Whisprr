@@ -7,6 +7,7 @@ import reminderroutes from "./src/routes/reminder.routes.js";
 import scheduleReminders from "./src/utils/scheduler.js";
 import userRoutes from "./src/routes/user.routes.js";
 import taskRouter from "./src/routes/task.controller.js";
+import scheduleRouter from "./src/routes/schedule.routes.js";
 import { connectDB } from "./src/lib/database.js";
 
 dotenv.config()
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use("/api/reminders",reminderroutes);
 app.use("/api/users",userRoutes);
 app.use("/api/tasks",taskRouter);
+app.use("/api/schedules",scheduleRouter);
 
 app.listen(process.env.PORT, () => {
     console.log("Server is running on http://localhost:" + process.env.PORT);

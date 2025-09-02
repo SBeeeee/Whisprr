@@ -4,7 +4,7 @@ import {
 
 export async function createScheduleController(req, res) {
     try {
-        const scheduleData={...req.body,createdBy:req._id};
+        const scheduleData={...req.body,createdBy:req.id};
         const schedule=await createSchedule(scheduleData);
         res.status(201).json({success:true,data:schedule});
     } catch (error) {

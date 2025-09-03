@@ -51,7 +51,7 @@ export default function DashboardView({
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-indigo-600" />
-              Today's Schedule
+              Today's Scheduleeeeeeeeeeee
             </h3>
             <button 
               onClick={()=>setActive("schedule")} 

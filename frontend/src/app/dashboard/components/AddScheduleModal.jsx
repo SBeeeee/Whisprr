@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Modal from "./Modal";
+import { createReminder } from "../api/reminders.api";
+import { createSchedule } from "../api/schedules.api";
 
 export default function AddScheduleModal({ open, onClose, onAdd }) {
   const [title, setTitle] = useState("");
@@ -8,20 +10,25 @@ export default function AddScheduleModal({ open, onClose, onAdd }) {
   const [end, setEnd] = useState("");
   const [setReminder, setSetReminder] = useState(false);
   const [reminderTime, setReminderTime] = useState("");
-  const [whatsapp, setWhatsapp] = useState(false);
 
-  const submit = () => {
-    if (!title || !date || !start) return;
-    onAdd({ 
-      title, 
-      date, 
-      start, 
-      end: end || null, 
-      done: false,
-      reminder: setReminder ? { time: reminderTime || start, whatsapp } : null,
-    });
-    onClose(); 
-    setTitle(""); setDate(""); setStart(""); setEnd(""); setSetReminder(false); setReminderTime(""); setWhatsapp(false);
+  const submit =async () => {
+    if (!title || !date || !start){
+      alert( "Title, Date and Start time are required");
+      return;
+    };
+    if(setReminder){
+      const startDateTime = new Date(`${date}T${start}:00`).toISOString();
+      if(end!=""){const endDateTime = new Date(`${date}T${end}:00`).toISOString();}
+      const response = await createReminder({ task: title, datetime: startDateTime });
+      alert("created reminder");
+   }
+   else{
+    const response = await createSchedule({ title,description,start:startDateTime, end:endDateTime,labels,priority });
+    alert("created schedule");
+   }
+
+  setTitle(""); setDate(""); setStart(""); setEnd(""); setSetReminder(false); setReminderTime("");
+
   };
 
   return (
@@ -85,15 +92,6 @@ export default function AddScheduleModal({ open, onClose, onAdd }) {
                 placeholder={start}
               />
             </div>
-            <label className="flex items-center gap-3 text-sm font-medium cursor-pointer">
-              <input 
-                type="checkbox" 
-                checked={whatsapp} 
-                onChange={()=>setWhatsapp(!whatsapp)}
-                className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-              />
-              Send WhatsApp reminder
-            </label>
           </div>
         )}
         

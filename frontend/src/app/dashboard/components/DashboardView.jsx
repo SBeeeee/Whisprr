@@ -1,3 +1,5 @@
+"use client"
+import {useEffect} from "react"
 import { CheckSquare, CheckCircle2, Bell, Calendar, ChevronRight, PlusCircle } from "lucide-react";
 import Card from "./Card";
 import Stat from "./Stat";
@@ -5,6 +7,9 @@ import ScheduleTable from "./ScheduleTable";
 import TasksList from "./TasksList";
 import RemindersList from "./RemindersList";
 import PomodoroTimer from "./PomodoroTimer";
+import { getSchedule } from "../api/schedules.api";
+import { useDispatch } from "react-redux";
+import { setSchedules } from "@/store/schedules/slice";
 
 export default function DashboardView({ 
   stats, 
@@ -16,6 +21,39 @@ export default function DashboardView({
   setActive, 
   setOpenTask 
 }) {
+
+  const dispatch = useDispatch();
+  const fetchSchedules = async () => {
+    try {
+      
+    
+      
+      const res = await getSchedule({range: "today"});
+      console.log("📥 API Response:", res);
+      
+      // Handle both response structures
+      if (res.success && res.data?.data) {
+        dispatch(setSchedules(res.data.data));
+      } else if (res.data?.data) {
+        dispatch(setSchedules(res.data.data));
+      } else if (res.data) {
+        dispatch(setSchedules(res.data));
+      } else {
+        console.warn("⚠️ Unexpected response structure:", res);
+        dispatch(setSchedules([]));
+      }
+    } catch (error) {
+      console.error("❌ Error fetching schedules:", error);
+      dispatch(setSchedules([]));
+    } finally {
+     
+    }
+  };
+
+  useEffect(() => {
+    fetchSchedules();
+  }, []); 
+
   return (
     <>
       {/* Stats */}

@@ -1,26 +1,11 @@
+// ScheduleTable.jsx
 "use client"
 import { Calendar, Clock3, CheckCircle2 } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { setSchedules } from "@/store/schedules/slice";
-import { useEffect } from "react";
-import { getSchedule } from "../api/schedules.api";
+import { useSelector } from "react-redux";
 
-export default function ScheduleTable({ items = [], onToggleDone, full = false }) {
-  const dispatch = useDispatch();
+export default function ScheduleTable({ onToggleDone, full = false }) {
   const { schedule } = useSelector((state) => state.schedules);
 
-  const fetchSchedules = async () => {
-    try {
-      const res = await getSchedule();
-      dispatch(setSchedules(res.data.data)); // ✅ your response has "data" directly
-    } catch (error) {
-      console.error("Error fetching schedules:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchSchedules();
-  }, []);
 
   return (
     <div className={`overflow-y-auto ${full ? "max-h-[65vh]" : "max-h-80"} custom-scroll`}>

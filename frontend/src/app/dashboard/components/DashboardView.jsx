@@ -8,9 +8,11 @@ import TasksList from "./TasksList";
 import RemindersList from "./RemindersList";
 import PomodoroTimer from "./PomodoroTimer";
 import { getSchedule } from "../api/schedules.api";
+import { getTasks } from "../api/tasks.api";
 import { useDispatch } from "react-redux";
 import { setSchedules } from "@/store/schedules/slice";
-
+import { setTodos } from "@/store/todos/slice";
+import { getTasksForUser } from "../api/tasks.api";
 export default function DashboardView({ 
   stats, 
   schedule, 
@@ -23,15 +25,21 @@ export default function DashboardView({
 }) {
 
   const dispatch = useDispatch();
+  const fetchTasks = async () => {
+    try {
+      const res=await getTasksForUser({range: "today"});
+      dispatch(setTodos(res.data.data));
+    } catch (error) {
+      console.error("❌ Error fetching tasks:",error);
+      dispatch(setTodos([]));
+    }
+  }
   const fetchSchedules = async () => {
     try {
-      
-    
-      
       const res = await getSchedule({range: "today"});
       console.log("📥 API Response:", res);
       
-      // Handle both response structures
+      
       if (res.success && res.data?.data) {
         dispatch(setSchedules(res.data.data));
       } else if (res.data?.data) {
@@ -45,13 +53,12 @@ export default function DashboardView({
     } catch (error) {
       console.error("❌ Error fetching schedules:", error);
       dispatch(setSchedules([]));
-    } finally {
-     
     }
   };
 
   useEffect(() => {
     fetchSchedules();
+    fetchTasks();
   }, []); 
 
   return (
@@ -89,7 +96,7 @@ export default function DashboardView({
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-indigo-600" />
-              Today's Scheduleeeeeeeeeeee
+              Today's Schedule
             </h3>
             <button 
               onClick={()=>setActive("schedule")} 
@@ -98,23 +105,31 @@ export default function DashboardView({
               View all <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-          <ScheduleTable items={schedule.filter(s=>s.date === new Date().toISOString().slice(0,10)).slice(0,5)} onToggleDone={toggleScheduleDone} />
+          <ScheduleTable onToggleDone={toggleScheduleDone} />
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               <CheckSquare className="w-5 h-5 text-blue-600" />
-              Recent Tasks
+              Today's Tasks
             </h3>
-            <button 
-              onClick={()=>setOpenTask(true)} 
-              className="text-sm text-blue-600 inline-flex items-center gap-1 hover:text-blue-700 transition-colors"
-            >
-              <PlusCircle className="w-4 h-4" /> Add Task
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={()=>setActive("tasks")} 
+                className="text-blue-600 text-sm inline-flex items-center gap-1 hover:text-blue-700 transition-colors"
+              >
+                View all <ChevronRight className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={()=>setOpenTask(true)} 
+                className="text-sm text-blue-600 inline-flex items-center gap-1 hover:text-blue-700 transition-colors"
+              >
+                <PlusCircle className="w-4 h-4" /> Add Task
+              </button>
+            </div>
           </div>
-          <TasksList items={tasks.slice(0,5)} onToggleDone={toggleTaskDone} />
+          <TasksList onToggleDone={toggleTaskDone} />
         </Card>
       </div>
 

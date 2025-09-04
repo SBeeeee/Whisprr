@@ -28,8 +28,21 @@ export const getTaskById = async (id) => {
 };
 
 // ✅ Get all tasks for logged-in user
-export const getTasksForUser = async () => {
-  return handleRequest(() => axiosInstance.get("/tasks"));
+export const getTasksForUser = async (params={}) => {
+  try{
+    const cleanParams = Object.fromEntries(
+      Object.entries(params).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+    );
+    const response = await axiosInstance.get("/tasks", { params: cleanParams });
+    return response;
+  }
+  catch(error){
+    return { 
+      success: false, 
+      error: error?.response?.data || error.message,
+      data: { data: [] } // Provide fallback structure
+    };
+  }
 };
 
 // ✅ Update a task

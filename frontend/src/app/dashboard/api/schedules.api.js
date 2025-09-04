@@ -1,4 +1,3 @@
-// api/schedules.api.js
 import axiosInstance from "@/utils/axiosInstance";
 
 export const createSchedule = async (scheduleData) => {

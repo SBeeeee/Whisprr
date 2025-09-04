@@ -7,20 +7,7 @@ import { setTodos } from "@/store/todos/slice";
 
 export default function ScheduleTable({ items = [], onToggleDone, full = false }) {
   const { todos } = useSelector((state) => state.todos);
-  const dispatch = useDispatch();
-
-  const fetchTasks = async () => {
-    try {
-      const data = await getTasksForUser();
-      dispatch(setTodos(data.data.data)); // tasks array
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  
 
   return (
     <div className={`overflow-y-auto ${full ? "max-h-[65vh]" : "max-h-80"} custom-scroll`}>

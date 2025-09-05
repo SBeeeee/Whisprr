@@ -29,7 +29,7 @@ export default function DashboardView({
   const dispatch = useDispatch();
   const fetchReminders=async()=>{
     try{
-      const res=await getRemindersForUser({range: "today"});
+      const res=await getRemindersForUser({status:"pending"});
       dispatch(setReminders(res.data.data));
     }
     catch(error){

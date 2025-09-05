@@ -16,11 +16,13 @@ export const createReminder = async (taskData) => {
   }
 };
 
-export const getRemindersForUser = async () => {
+export const getRemindersForUser = async (params={}) => {
   try {
-    const data=axiosInstance.get("reminders/reminders");
-    console.log(data)
-    return data;
+    const cleanParams = Object.fromEntries(
+      Object.entries(params).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+    );
+    const response=await axiosInstance.get("/reminders/reminders",{params:cleanParams});
+    return response;
   } catch (error) {
     console.error("❌ API Error:", error?.response?.data || error.message);
     return {
@@ -33,3 +35,4 @@ export const getRemindersForUser = async () => {
   
   }
 }
+

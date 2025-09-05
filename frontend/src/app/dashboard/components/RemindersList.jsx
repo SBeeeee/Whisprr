@@ -6,22 +6,9 @@ import { useEffect } from "react";
 import { getRemindersForUser } from "../api/reminders.api";
 
 export default function RemindersList({ items = [] }) {
-  const dispatch = useDispatch();
+ 
   const { reminders } = useSelector((state) => state.reminders);
 
-  const fetchReminders = async () => {
-    try {
-      const data = await getRemindersForUser();
-      dispatch(setReminders(data.data.data));
-      console.log(data.data);
-    } catch (error) {
-      console.error("Error fetching reminders:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchReminders();
-  }, []);
 
   return (
     <div className="overflow-y-auto max-h-[65vh] custom-scroll">

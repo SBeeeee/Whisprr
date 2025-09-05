@@ -18,7 +18,13 @@ export const createReminders = async (req, res) => {
 
 export const getReminders =async(req,res)=>{
   try{
-      const reminders=await getuserReminders(req.id);
+    const{date,range,search,label,status,priority}=req.query;
+      const reminders=await getuserReminders(req.id,{ date,
+        range,
+        search,
+        label,
+        status,
+        priority,});
       res.status(200).json({
         success:true,
         data:reminders,

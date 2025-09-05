@@ -13,6 +13,8 @@ import { useDispatch } from "react-redux";
 import { setSchedules } from "@/store/schedules/slice";
 import { setTodos } from "@/store/todos/slice";
 import { getTasksForUser } from "../api/tasks.api";
+import { getRemindersForUser } from "../api/reminders.api";
+import { setReminders } from "@/store/reminders/slice";
 export default function DashboardView({ 
   stats, 
   schedule, 
@@ -25,6 +27,16 @@ export default function DashboardView({
 }) {
 
   const dispatch = useDispatch();
+  const fetchReminders=async()=>{
+    try{
+      const res=await getRemindersForUser({range: "today"});
+      dispatch(setReminders(res.data.data));
+    }
+    catch(error){
+      console.error("❌ Error fetching Reminders:",error);
+      dispatch(setReminders([]));
+    }
+  }
   const fetchTasks = async () => {
     try {
       const res=await getTasksForUser({range: "today"});
@@ -59,6 +71,7 @@ export default function DashboardView({
   useEffect(() => {
     fetchSchedules();
     fetchTasks();
+    fetchReminders();
   }, []); 
 
   return (

@@ -19,7 +19,7 @@ export default function ScheduleTable({ onToggleDone, full = false }) {
             <div
               key={ev._id}
               className={`bg-gradient-to-r from-gray-50/80 to-gray-100/50 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 hover:shadow-md transition-all duration-200 ${
-                ev.status === "done" ? "opacity-60" : ""
+                ev.status === "completed" ? "opacity-60" : ""
               }`}
             >
               <div className="flex items-center justify-between">
@@ -39,7 +39,7 @@ export default function ScheduleTable({ onToggleDone, full = false }) {
                 <button
                   onClick={() => onToggleDone(ev._id)}
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                    ev.status === "done"
+                    ev.status === "completed"
                       ? "bg-green-100 text-green-700 hover:bg-green-200"
                       : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                   }`}

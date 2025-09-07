@@ -8,6 +8,7 @@ import FilterBar from "./FilterBar";
 import { getSchedule } from "../api/schedules.api";
 import { useDispatch } from "react-redux";
 import { setSchedules } from "@/store/schedules/slice";
+import { markScheduledone } from "../api/schedules.api";
 
 export default function ScheduleView({ toggleScheduleDone, setOpenSched }) {
   const [filters, setFilters] = useState({ range: "today" });
@@ -43,7 +44,17 @@ export default function ScheduleView({ toggleScheduleDone, setOpenSched }) {
   useEffect(() => {
     fetchSchedules();
   }, [filters]); 
-
+  const handleToggleDones=async(scheduleid)=>{
+    try{
+      const res=await markScheduledone(scheduleid);
+      if(res?.status===200 || res?.success){
+        fetchSchedules();
+      }
+    }
+    catch(error){
+      console.error("❌ Error marking schedule done:",error);
+    }
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -65,7 +76,7 @@ export default function ScheduleView({ toggleScheduleDone, setOpenSched }) {
       )}
 
       <Card className="p-6">
-        <ScheduleTable onToggleDone={toggleScheduleDone} full />
+        <ScheduleTable onToggleDone={handleToggleDones} full />
       </Card>
     </div>
   );

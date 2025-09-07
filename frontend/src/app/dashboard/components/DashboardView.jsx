@@ -16,6 +16,7 @@ import { getTasksForUser } from "../api/tasks.api";
 import { getRemindersForUser } from "../api/reminders.api";
 import { setReminders } from "@/store/reminders/slice";
 import { marktaskdone } from "../api/tasks.api";
+import { markScheduledone } from "../api/schedules.api";
 export default function DashboardView({ 
   stats, 
   schedule, 
@@ -26,7 +27,17 @@ export default function DashboardView({
   setActive, 
   setOpenTask 
 }) {
-
+  const handleToggleDones=async(scheduleid)=>{
+    try{
+      const res=await markScheduledone(scheduleid);
+      if(res?.status===200 || res?.success){
+        fetchSchedules();
+      }
+    }
+    catch(error){
+      console.error("❌ Error marking schedule done:",error);
+    }
+  }
   const dispatch = useDispatch();
   const fetchReminders=async()=>{
     try{
@@ -130,7 +141,7 @@ export default function DashboardView({
               View all <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-          <ScheduleTable onToggleDone={toggleScheduleDone} />
+          <ScheduleTable onToggleDone={handleToggleDones} />
         </Card>
 
         <Card className="p-6">

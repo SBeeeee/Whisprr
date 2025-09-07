@@ -17,7 +17,10 @@ const app=express();
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:3000", // allow only frontend
+    origin: [
+      "http://localhost:3000", 
+      "https://whisprr-two.vercel.app" // ✅ allow deployed frontend too
+    ],
     credentials: true, // allow cookies/auth headers
   })
 );

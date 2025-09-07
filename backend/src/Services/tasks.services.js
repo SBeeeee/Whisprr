@@ -89,3 +89,13 @@ export async function deleteTask(taskId) {
     }
     return task;
 }
+
+export async function MarkasDone(taskId) {
+    const task = await Task.findById(taskId);
+    if (!task){
+        throw new Error("Task not found");
+    }
+    task.status="done";
+    task.save();
+    return task;
+}

@@ -4,6 +4,7 @@ import {
     getTasksWithFilters, // Updated function name
     updateTask,
     deleteTask,
+    MarkasDone
 } from "../Services/tasks.services.js";
 
 // Create
@@ -65,6 +66,17 @@ export async function deleteTaskController(req, res) {
         if (!task) return res.status(404).json({ success: false, message: "Task deleted successfully" });
         res.json({ success: true, message: "Task deleted" });
     } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+export async function MarkasDoneController(req,res){
+    try{
+        const task = await MarkasDone(req.params.id);
+        if (!task) return res.status(404).json({ success: false, message: "Task not found" });
+        res.json({ success: true, data: task });
+    }
+    catch(error){
         res.status(500).json({ success: false, message: error.message });
     }
 }

@@ -128,7 +128,7 @@ export default function Page() {
               tasks={tasks}
               reminders={reminders}
               toggleScheduleDone={toggleScheduleDone}
-              toggleTaskDone={toggleTaskDone}
+            
               setActive={setActive}
               setOpenTask={setOpenTask}
             />
@@ -145,7 +145,7 @@ export default function Page() {
           {active === "tasks" && (
             <TasksView 
               tasks={tasks}
-              toggleTaskDone={toggleTaskDone}
+             
               setOpenTask={setOpenTask}
             />
           )}

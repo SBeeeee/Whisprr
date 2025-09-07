@@ -5,9 +5,10 @@ import { setTodos } from "@/store/todos/slice";
 import { useDispatch } from "react-redux";
 import { getTasksForUser } from "../api/tasks.api";
 import {useEffect,useState} from 'react';
+import { marktaskdone } from "../api/tasks.api";
 import FilterBar from "./FilterBar";
 
-export default function TasksView({ tasks, toggleTaskDone, setOpenTask }) {
+export default function TasksView({ tasks, setOpenTask }) {
   const dispatch = useDispatch();
   const [filters, setFilters] = useState({ range: "today" });
   const [loading, setLoading] = useState(false);
@@ -29,6 +30,21 @@ export default function TasksView({ tasks, toggleTaskDone, setOpenTask }) {
     fetchTasks();
   }, [filters]); 
 
+  // Inside TasksView
+const handleToggleDone = async (taskId) => {
+  try {
+    const res = await marktaskdone(taskId);
+
+    if (res?.status === 200 || res?.success) {
+      // ✅ Refetch tasks to update UI
+      fetchTasks();
+    }
+  } catch (error) {
+    console.error("❌ Error marking task done:", error);
+  }
+};
+
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -47,7 +63,7 @@ export default function TasksView({ tasks, toggleTaskDone, setOpenTask }) {
         </div>
       )}
       <Card className="p-6">
-        <TasksList items={tasks} onToggleDone={toggleTaskDone}/>
+        <TasksList items={tasks} onToggleDone={handleToggleDone}/>
       </Card>
     </div>
   );

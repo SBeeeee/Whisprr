@@ -15,6 +15,7 @@ import { setTodos } from "@/store/todos/slice";
 import { getTasksForUser } from "../api/tasks.api";
 import { getRemindersForUser } from "../api/reminders.api";
 import { setReminders } from "@/store/reminders/slice";
+import { marktaskdone } from "../api/tasks.api";
 export default function DashboardView({ 
   stats, 
   schedule, 
@@ -73,7 +74,18 @@ export default function DashboardView({
     fetchTasks();
     fetchReminders();
   }, []); 
-
+  const handleToggleDone = async (taskId) => {
+    try {
+      const res = await marktaskdone(taskId);
+  
+      if (res?.status === 200 || res?.success) {
+        // ✅ Refetch tasks to update UI
+        fetchTasks();
+      }
+    } catch (error) {
+      console.error("❌ Error marking task done:", error);
+    }
+  };
   return (
     <>
       {/* Stats */}
@@ -142,7 +154,7 @@ export default function DashboardView({
               </button>
             </div>
           </div>
-          <TasksList onToggleDone={toggleTaskDone} />
+          <TasksList onToggleDone={handleToggleDone} />
         </Card>
       </div>
 

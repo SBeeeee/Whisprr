@@ -54,3 +54,19 @@ export const updateTask = async (id, updates) => {
 export const deleteTask = async (id) => {
   return handleRequest(() => axiosInstance.delete(`/tasks/${id}`));
 };
+
+export const marktaskdone=async(taskid)=>{
+  try{
+      const data=await axiosInstance.put(`/tasks/markdone/${taskid}`);
+      return data;
+  }
+  catch(error){
+    return {
+      success: false,
+      error: {
+        status: error?.response?.status || 500,
+        message: error?.response?.data?.error || error?.message || "Something went wrong",
+      },
+    };
+  }
+}

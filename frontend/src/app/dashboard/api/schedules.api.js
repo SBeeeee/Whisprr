@@ -57,3 +57,19 @@ export const deleteSchedule = async (id) => {
     return { success: false, error: error?.response?.data || error.message };
   }
 };
+
+export const markScheduledone=async(scheduleid)=>{
+  try{
+      const data=await axiosInstance.put(`/schedules/markdone/${scheduleid}`);
+      return data;
+  }
+  catch(error){
+    return {
+      success: false,
+      error: {
+        status: error?.response?.status || 500,
+        message: error?.response?.data?.error || error?.message || "Something went wrong",
+      },
+    };
+  }
+}

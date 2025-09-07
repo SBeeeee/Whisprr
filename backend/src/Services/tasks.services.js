@@ -23,9 +23,23 @@ export async function getTasksWithFilters(userId, filters) {
         $or: [{ createdBy: userId }, { assignedTo: userId }],
     };
 
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+   // Always calculate day boundaries in UTC
+const now = new Date();
+
+const startOfDay = new Date(Date.UTC(
+  now.getUTCFullYear(),
+  now.getUTCMonth(),
+  now.getUTCDate(),
+  0, 0, 0, 0
+));
+
+const endOfDay = new Date(Date.UTC(
+  now.getUTCFullYear(),
+  now.getUTCMonth(),
+  now.getUTCDate(),
+  23, 59, 59, 999
+));
+
 
 
     if (filters.date === "today" || filters.range === "today") {

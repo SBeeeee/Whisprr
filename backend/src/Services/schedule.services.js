@@ -43,6 +43,6 @@ export async function getSchedulesWithFilters(userId, filters) {
 export async function markdoneSchedule(scheduleId) {
   const schedule = await Schedule.findById(scheduleId);
   if (!schedule) throw new Error("Schedule not found");
-  schedule.status = "done";
+  schedule.status = "completed";
   return schedule.save();
 }

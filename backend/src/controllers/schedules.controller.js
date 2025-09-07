@@ -1,6 +1,7 @@
 import {
     createSchedule,
-    getSchedulesWithFilters
+    getSchedulesWithFilters,
+    markdoneSchedule
   } from "../Services/schedule.services.js";
   
   export async function createScheduleController(req, res) {
@@ -30,3 +31,12 @@ import {
     }
   }
 
+  export async function markdoneScheduleController(req, res) {
+    try {
+      const { scheduleId } = req.params;
+      const schedule = await markdoneSchedule(scheduleId);
+      res.status(200).json({ success: true, data: schedule });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }

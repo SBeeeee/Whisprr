@@ -96,6 +96,6 @@ export async function MarkasDone(taskId) {
         throw new Error("Task not found");
     }
     task.status="done";
-    task.save();
+    await task.save();
     return task;
 }

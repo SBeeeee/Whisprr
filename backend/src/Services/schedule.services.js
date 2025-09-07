@@ -39,3 +39,10 @@ export async function getSchedulesWithFilters(userId, filters) {
 
   return Schedule.find(query).sort({ start: 1 });
 }
+
+export async function markdoneSchedule(scheduleId) {
+  const schedule = await Schedule.findById(scheduleId);
+  if (!schedule) throw new Error("Schedule not found");
+  schedule.status = "done";
+  return schedule.save();
+}

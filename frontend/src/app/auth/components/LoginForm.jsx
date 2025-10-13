@@ -22,7 +22,7 @@ const LoginForm = () => {
       if (response && response.token) {
         localStorage.setItem('token', response.token);
         dispatch(setUser(response.user));
-        router.push('/dashboard');
+        router.push('/');
       } else {
         setError('Login failed: No token received.');
       }

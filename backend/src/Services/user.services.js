@@ -40,3 +40,23 @@ export const registerUser = async ({ username, password, phone }) => {
   export const getUserById = async (id) => {
     return await User.findById(id).select("-password");
   };
+
+  export const settimer =async({id,time})=>{
+    const user = await User.findById(id);
+    if(!user){
+      throw new Error("User not found");
+    }
+    user.timer = time;
+    await user.save();
+    return user;
+  
+  }
+
+  export const gettimer =async({id})=>{
+    const user = await User.findById(id);
+    if(!user){
+      throw new Error("User not found");
+    }
+    return user.timer;
+
+  }

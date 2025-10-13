@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema({
       required: true,
       unique: true,
     },
+    timer:{
+      type: Number,
+      default: 25,
+    },
     password: {
       type: String,
       required: true,

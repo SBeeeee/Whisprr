@@ -1,4 +1,4 @@
-import { registerUser, loginUser, getUserById } from "../Services/user.services.js";
+import { registerUser, loginUser, getUserById,gettimer,settimer } from "../Services/user.services.js";
 
 export const register = async (req, res) => {
     try {
@@ -42,3 +42,25 @@ export const logout = (req, res) => {
         .status(200)
         .json({ message: "Logged out successfully" });
 };
+
+export const settimercontroller = async (req,res) => {
+    try {
+        const {time} = req.body;
+        const id = req.id;
+        const user = await settimer({id,time});
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(400).json({error: err.message});
+    }
+}
+
+
+export const gettimercontroller = async (req,res) => {
+    try {
+        const id = req.id;
+        const timer = await gettimer({id});
+        res.status(200).json({timer});
+    } catch (err) {
+        res.status(400).json({error: err.message});
+    }
+}

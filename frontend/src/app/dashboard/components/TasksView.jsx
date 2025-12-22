@@ -7,6 +7,7 @@ import { getTasksForUser } from "../api/tasks.api";
 import {useEffect,useState} from 'react';
 import { marktaskdone } from "../api/tasks.api";
 import FilterBar from "./FilterBar";
+import ScheduleTable from "./TaskHorizontallist";
 
 export default function TasksView({ tasks, setOpenTask }) {
   const dispatch = useDispatch();
@@ -36,7 +37,7 @@ const handleToggleDone = async (taskId) => {
     const res = await marktaskdone(taskId);
 
     if (res?.status === 200 || res?.success) {
-      // ✅ Refetch tasks to update UI
+      
       fetchTasks();
     }
   } catch (error) {
@@ -63,7 +64,7 @@ const handleToggleDone = async (taskId) => {
         </div>
       )}
       <Card className="p-6">
-        <TasksList items={tasks} onToggleDone={handleToggleDone}/>
+        <ScheduleTable items={tasks} onToggleDone={handleToggleDone}/>
       </Card>
     </div>
   );

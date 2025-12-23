@@ -3,6 +3,7 @@ import {useSelector,useDispatch} from "react-redux"
 import { useRouter } from "next/navigation"
 import { useEffect,useState } from "react"
 import { checkAuth } from "./checkAuth"
+import Loader from "@/components/Loader"
 
 export default function PrivateRoute({children}){
     const {user} =useSelector((state)=>state.user);
@@ -32,8 +33,8 @@ export default function PrivateRoute({children}){
 
     if (checking) {
         return (
-          <div className="flex justify-center items-center min-h-screen text-white">
-            Checking authentication...
+          <div className="flex justify-center items-center min-h-screen text-black">
+            <Loader fullscreen size="lg" text="Checking Authentication" />
           </div>
         );
       }

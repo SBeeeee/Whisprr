@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import Card from "./Card";
+import Card from "../app/dashboard/components/Card";
 
 export default function Modal({ open, onClose, title, children }) {
   if (!open) return null;

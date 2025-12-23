@@ -1,7 +1,8 @@
 import { useState } from "react";
-import Modal from "./Modal";
+import Modal from "@/components/Modal";
 import { createReminder } from "../api/reminders.api";
 import { createSchedule } from "../api/schedules.api";
+import Loader from "@/components/Loader";
 
 export default function AddScheduleModal({ open, onClose, onAdd }) {
   const [title, setTitle] = useState("");
@@ -13,12 +14,17 @@ export default function AddScheduleModal({ open, onClose, onAdd }) {
   const [priority, setPriority] = useState("medium");
   const [setReminder, setSetReminder] = useState(false);
   const [reminderTime, setReminderTime] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const submit = async () => {
+    try{
+
+    setLoading(true);
     if (!title || !date || !start) {
       alert("Title, Date and Start time are required");
       return;
     }
+    
 
     const startDateTime = new Date(`${date}T${start}:00`).toISOString();
     const endDateTime = end ? new Date(`${date}T${end}:00`).toISOString() : null;
@@ -51,6 +57,14 @@ export default function AddScheduleModal({ open, onClose, onAdd }) {
     setPriority("medium");
     setSetReminder(false);
     setReminderTime("");
+  }
+  catch(error){
+    console.error("❌ Error creating schedule or reminder:",error);
+    alert("Error creating schedule or reminder");
+  }
+  finally{
+    setLoading(false);
+  }
   };
 
   return (
@@ -179,15 +193,21 @@ export default function AddScheduleModal({ open, onClose, onAdd }) {
           <div className="flex justify-end gap-3 pt-6 pb-2">
             <button
               onClick={onClose}
+              disabled={loading}
               className="px-5 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 transition"
             >
               Cancel
             </button>
             <button
               onClick={submit}
+              disabled={loading}
               className="px-6 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow hover:from-indigo-700 hover:to-purple-700 transition"
             >
-              Add to Schedule
+               {loading ? (
+      <Loader size="sm" text="Saving..." className="text-white" />
+    ) : (
+      "Add to Schedule"
+    )}
             </button>
           </div>
         </div>

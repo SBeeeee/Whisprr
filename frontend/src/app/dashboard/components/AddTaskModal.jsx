@@ -1,7 +1,8 @@
 import { useState } from "react";
-import Modal from "./Modal";
+import Modal from "@/components/Modal";
 import { createReminder } from "../api/reminders.api";
 import { createTask } from "../api/tasks.api";
+import Loader from "@/components/Loader";
 
 export default function AddTaskModal({ open, onClose, onAdd, users = [] }) {
   const [title, setTitle] = useState("");
@@ -10,7 +11,7 @@ export default function AddTaskModal({ open, onClose, onAdd, users = [] }) {
   const [priority, setPriority] = useState("medium");
   const [labels, setLabels] = useState("");
   const [recurring, setRecurring] = useState(false);
-
+  const [loading, setLoading] = useState(false);
 
   // Reminder states (extra)
   const [setReminder, setSetReminder] = useState(false);
@@ -20,6 +21,8 @@ export default function AddTaskModal({ open, onClose, onAdd, users = [] }) {
   
 
   const submit = async() => {
+    try{
+    setLoading(true);
     if (!title || !dueDate) {
       alert("Title and Due Date are required");
       return;
@@ -45,6 +48,13 @@ export default function AddTaskModal({ open, onClose, onAdd, users = [] }) {
     setRecurring(false);
     setSetReminder(false);
     setReminderTime("");
+  }
+  catch(error){
+    console.error("❌ Error creating task or reminder:",error);
+  }
+  finally{
+    setLoading(false);
+  }
   };
 
   return (
@@ -186,15 +196,21 @@ export default function AddTaskModal({ open, onClose, onAdd, users = [] }) {
           <div className="flex justify-end gap-3 pt-6  pb-2">
             <button
               onClick={onClose}
+              disabled={loading}
               className="px-5 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 transition"
             >
               Cancel
             </button>
             <button
               onClick={submit}
+              disabled={loading}
               className="px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow hover:from-blue-700 hover:to-purple-700 transition"
             >
-              Add Task
+            {loading ? (
+      <Loader size="sm" text="Saving..." className="text-white" />
+    ) : (
+      "Add to Tasks"
+    )}
             </button>
           </div>
         </div>

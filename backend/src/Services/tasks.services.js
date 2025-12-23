@@ -118,3 +118,40 @@ export async function MarkasDone(taskId) {
     await task.save();
     return task;
 }
+
+export async function getAnalysisTask(userId){
+    const totalTasks = await Task.countDocuments({
+        $or: [{ createdBy: userId }, { assignedTo: userId }],
+    });
+
+    const completedTasks = await Task.countDocuments({
+        $or: [{ createdBy: userId }, { assignedTo: userId }],
+        status: "completed",
+    });
+
+    const pendingTasks = totalTasks - completedTasks;
+
+    return {
+        totalTasks,
+        completedTasks,
+        pendingTasks,
+    };
+}
+
+export async function ShiftToTommorow(taskId){
+    const task = await Task.findById(taskId);
+    if (!task){
+        throw new Error("Task not found");
+    }
+
+    // Get current due date
+    const currentDueDate = task.dueDate;
+
+    // Add one day (24 hours) to the current due date
+    const newDueDate = new Date(currentDueDate.getTime() + 24 * 60 * 60 * 1000);
+
+    // Update the task's due date
+    task.dueDate = newDueDate;
+    await task.save();
+    return task;
+}

@@ -4,7 +4,9 @@ import {
     getTasksWithFilters, // Updated function name
     updateTask,
     deleteTask,
-    MarkasDone
+    MarkasDone,
+    getAnalysisTask,
+    ShiftToTommorow
 } from "../Services/tasks.services.js";
 
 // Create
@@ -73,6 +75,27 @@ export async function deleteTaskController(req, res) {
 export async function MarkasDoneController(req,res){
     try{
         const task = await MarkasDone(req.params.id);
+        if (!task) return res.status(404).json({ success: false, message: "Task not found" });
+        res.json({ success: true, data: task });
+    }
+    catch(error){
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+export async function getAnalysisTaskController(req,res){
+    try{
+        const analysis = await getAnalysisTask(req.id);
+        res.json({ success: true, data: analysis });
+    }
+    catch(error){
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+export async function ShiftToTommorowController(req,res){
+    try{
+        const task = await ShiftToTommorow(req.params.id);
         if (!task) return res.status(404).json({ success: false, message: "Task not found" });
         res.json({ success: true, data: task });
     }

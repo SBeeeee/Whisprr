@@ -33,6 +33,10 @@ const taskSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  team:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Team",
+  }
 }, { timestamps: true });
 
 export default mongoose.model("Task", taskSchema);

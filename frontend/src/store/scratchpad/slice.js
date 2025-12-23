@@ -1,8 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { set } from "date-fns";
 
 const initialState={
     content:"",
     id:null,
+    scratchloading:false,
+    loadingType:null,
 }
 
 const scratchpadSlice=createSlice({
@@ -15,8 +18,12 @@ const scratchpadSlice=createSlice({
         setId:(state,action)=>{
             state.id=action.payload;
         },
+        setScratchLoading:(state,action)=>{
+            state.scratchloading = action.payload.loading;
+            state.loadingType = action.payload.type;
+        }
     }
 });
 
-export const{setContent,setId}=scratchpadSlice.actions;
+export const{setContent,setId,setScratchLoading}=scratchpadSlice.actions;
 export default scratchpadSlice.reducer;

@@ -70,3 +70,7 @@ export const marktaskdone=async(taskid)=>{
     };
   }
 }
+
+export const shifttotommorow=async(taskid)=>{
+return handleRequest(()=> axiosInstance.put(`/tasks/shifttotomorrow/${taskid}`));
+}

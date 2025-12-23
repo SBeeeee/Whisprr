@@ -5,7 +5,6 @@ import { setTodos } from "@/store/todos/slice";
 import { useDispatch } from "react-redux";
 import { getTasksForUser } from "../api/tasks.api";
 import {useEffect,useState} from 'react';
-import { marktaskdone } from "../api/tasks.api";
 import FilterBar from "./FilterBar";
 import ScheduleTable from "./TaskHorizontallist";
 
@@ -13,6 +12,15 @@ export default function TasksView({ tasks, setOpenTask }) {
   const dispatch = useDispatch();
   const [filters, setFilters] = useState({ range: "today" });
   const [loading, setLoading] = useState(false);
+  
+  
+
+  useEffect(() => {
+    fetchTasks();
+  }, [filters]); 
+
+  // Inside TasksView
+
   const fetchTasks = async () => {
     try {
       setLoading(true);
@@ -21,29 +29,10 @@ export default function TasksView({ tasks, setOpenTask }) {
     } catch (error) {
       console.error("❌ Error fetching tasks:", error);
       dispatch(setTodos([]));
-    }
-    finally{
+    } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchTasks();
-  }, [filters]); 
-
-  // Inside TasksView
-const handleToggleDone = async (taskId) => {
-  try {
-    const res = await marktaskdone(taskId);
-
-    if (res?.status === 200 || res?.success) {
-      
-      fetchTasks();
-    }
-  } catch (error) {
-    console.error("❌ Error marking task done:", error);
-  }
-};
 
 
   return (
@@ -64,7 +53,7 @@ const handleToggleDone = async (taskId) => {
         </div>
       )}
       <Card className="p-6">
-        <ScheduleTable items={tasks} onToggleDone={handleToggleDone}/>
+        <ScheduleTable  />
       </Card>
     </div>
   );

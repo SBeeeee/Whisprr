@@ -17,7 +17,7 @@ import {
 } from "../api/tasks.api";
 import { setTodos } from "@/store/todos/slice";
 
-export default function ScheduleTable({ full = false }) {
+export default function ScheduleTable({ full = false ,filters }) {
   const { todos } = useSelector((state) => state.todos);
   const [shiftingTaskId, setShiftingTaskId] = useState(null);
   const [doneTaskId, setDoneTaskId] = useState(null);
@@ -54,7 +54,7 @@ export default function ScheduleTable({ full = false }) {
 
   const fetchTasks = async () => {
     try {
-      const res = await getTasksForUser();
+      const res = await getTasksForUser(filters);
       dispatch(setTodos(res.data.data));
     } catch {
       dispatch(setTodos([]));

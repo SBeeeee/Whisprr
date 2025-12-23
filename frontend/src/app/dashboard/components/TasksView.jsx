@@ -53,7 +53,7 @@ export default function TasksView({ tasks, setOpenTask }) {
         </div>
       )}
       <Card className="p-6">
-        <ScheduleTable  />
+        <ScheduleTable  filters={filters}/>
       </Card>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
 import Card from "./Card";
-import ScheduleTable from "./ScheduleTable";
+import HorizontalScheduleTable from "./ScheduleHorizontalView";
 import FilterBar from "./FilterBar";
 import { getSchedule } from "../api/schedules.api";
 import { useDispatch } from "react-redux";
@@ -44,6 +44,7 @@ export default function ScheduleView({ toggleScheduleDone, setOpenSched }) {
   useEffect(() => {
     fetchSchedules();
   }, [filters]); 
+
   const handleToggleDones=async(scheduleid)=>{
     try{
       const res=await markScheduledone(scheduleid);
@@ -55,6 +56,7 @@ export default function ScheduleView({ toggleScheduleDone, setOpenSched }) {
       console.error("❌ Error marking schedule done:",error);
     }
   }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -76,7 +78,7 @@ export default function ScheduleView({ toggleScheduleDone, setOpenSched }) {
       )}
 
       <Card className="p-6">
-        <ScheduleTable onToggleDone={handleToggleDones} full />
+        <HorizontalScheduleTable onToggleDone={handleToggleDones} />
       </Card>
     </div>
   );

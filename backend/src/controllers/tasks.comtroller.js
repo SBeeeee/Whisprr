@@ -53,6 +53,13 @@ export async function getUserTasksController(req, res) {
 // Update
 export async function updateTaskController(req, res) {
     try {
+        if (req.task?.team && req.teamRole !== "admin") {
+            delete req.body.title;
+            delete req.body.priority;
+            delete req.body.dueDate;
+            delete req.body.assignedTo;
+          }
+          
         const task = await updateTask(req.params.id, req.body);
         if (!task) return res.status(404).json({ success: false, message: "Task not found" });
         res.json({ success: true, data: task });

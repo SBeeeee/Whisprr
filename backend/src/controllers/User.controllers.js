@@ -1,4 +1,4 @@
-import { registerUser, loginUser, getUserById,gettimer,settimer } from "../Services/user.services.js";
+import { registerUser, loginUser, getUserById,gettimer,settimer,getAllUser } from "../Services/user.services.js";
 
 export const register = async (req, res) => {
     try {
@@ -62,5 +62,14 @@ export const gettimercontroller = async (req,res) => {
         res.status(200).json({timer});
     } catch (err) {
         res.status(400).json({error: err.message});
+    }
+}
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await getAllUser();
+        res.status(200).json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 }

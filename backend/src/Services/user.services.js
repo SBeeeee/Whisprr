@@ -60,3 +60,8 @@ export const registerUser = async ({ username, password, phone }) => {
     return user.timer;
 
   }
+
+  export const getAllUser =async()=>{
+    return await User.find().select("-password");
+  }
+  

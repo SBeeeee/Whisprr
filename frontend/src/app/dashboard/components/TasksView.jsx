@@ -1,5 +1,5 @@
 import { PlusCircle } from "lucide-react";
-import Card from "./Card";
+import Card from "../../../components/Card";
 import TasksList from "./TasksList";
 import { setTodos } from "@/store/todos/slice";
 import { useDispatch } from "react-redux";

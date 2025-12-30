@@ -1,5 +1,5 @@
 import { PenTool, Save } from "lucide-react";
-import Card from "./Card";
+import Card from "../../../components/Card";
 import { useDispatch, useSelector } from "react-redux";
 import { setContent, setScratchLoading } from "@/store/scratchpad/slice";
 import { createScrat } from "../api/scratchpad.api";

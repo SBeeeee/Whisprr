@@ -1,7 +1,7 @@
 "use client"
 import {useEffect} from "react"
 import { CheckSquare, CheckCircle2, Bell, Calendar, ChevronRight, PlusCircle } from "lucide-react";
-import Card from "./Card";
+import Card from "../../../components/Card";
 import Stat from "./Stat";
 import ScheduleTable from "./ScheduleTable";
 import TasksList from "./TasksList";

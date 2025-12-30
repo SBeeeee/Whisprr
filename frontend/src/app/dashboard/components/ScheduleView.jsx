@@ -2,7 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
-import Card from "./Card";
+import Card from "../../../components/Card";
 import HorizontalScheduleTable from "./ScheduleHorizontalView";
 import FilterBar from "./FilterBar";
 import { getSchedule } from "../api/schedules.api";

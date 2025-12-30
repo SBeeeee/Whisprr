@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Timer } from "lucide-react";
-import Card from "./Card";
+import Card from "../../../components/Card";
 import { gettimer, settimer, resettimer } from "../api/promodoro";
 
 export default function PomodoroTimer() {

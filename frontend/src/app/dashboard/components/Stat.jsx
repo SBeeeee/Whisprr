@@ -1,4 +1,4 @@
-import Card from "./Card";
+import Card from "../../../components/Card";
 
 export default function Stat({ icon, title, value, sub, gradient = "from-blue-500 to-purple-500" }) {
   return (

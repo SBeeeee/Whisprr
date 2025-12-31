@@ -14,11 +14,12 @@ import CreateTeamCard from "./CreateTeamCard";
 import Loader from "@/components/Loader";
 import RecentTasksTable from "./RecentTasksTable";
 import CreateTeamModal from "./CreateTeamModal";
+import { useRouter } from "next/navigation";
 
 
 export default function TeamsLandingPage() {
   const dispatch = useDispatch();
-
+  const router = useRouter(); 
   const { teams, teamloading } = useSelector(state => state.teams);
   const { user } = useSelector(state => state.user);
   const [openCreate, setOpenCreate] = useState(false);
@@ -42,8 +43,8 @@ export default function TeamsLandingPage() {
 
   const handleOpenTeam = (teamId) => {
     dispatch(setCurrentTeamId(teamId));
-    console.log("Navigate to team:", teamId);
-    // router.push(`/teams/${teamId}`)
+
+    router.push(`/teams/${teamId}`)
   };
 
   if (teamloading) {

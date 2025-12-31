@@ -4,7 +4,7 @@ import {createSlice, current} from '@reduxjs/toolkit';
 const initialState={
     teams:[],
     dashboardtasks:[],
-    currentTeamId:null,
+    currentTeamId:[],
     teamloading:false,
 }
 

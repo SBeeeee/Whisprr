@@ -42,7 +42,7 @@ export default function TeamsLandingPage() {
   };
 
   const handleOpenTeam = (teamId) => {
-    dispatch(setCurrentTeamId(teamId));
+    
 
     router.push(`/teams/${teamId}`)
   };

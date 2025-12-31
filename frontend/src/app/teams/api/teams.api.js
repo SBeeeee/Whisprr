@@ -24,3 +24,7 @@ export const getDashboard =async()=>{
 export const createTeam = async (team) => {
   return handleRequest(() => axiosInstance.post("/teams/create", team));
 };
+
+export const getTeamById = async (teamId) => {
+  return handleRequest(() => axiosInstance.get(`/teams/getteam/${teamId}`));
+};

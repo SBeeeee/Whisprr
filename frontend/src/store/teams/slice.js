@@ -4,7 +4,7 @@ import {createSlice, current} from '@reduxjs/toolkit';
 const initialState={
     teams:[],
     dashboardtasks:[],
-    currentTeamId:[],
+    currentTeam:[],
     teamloading:false,
 }
 
@@ -15,8 +15,8 @@ const teamSlice=createSlice({
         setTeams:(state,action)=>{
             state.teams=action.payload;
         },
-        setCurrentTeamId:(state,action)=>{
-            state.currentTeamId=action.payload;
+        setCurrentTeam:(state,action)=>{
+            state.currentTeam=action.payload;
         },
         setDashboardTasks:(state,action)=>{
             state.dashboardtasks=action.payload;
@@ -27,5 +27,5 @@ const teamSlice=createSlice({
     }
 })
 
-export const {setTeams,setCurrentTeamId,setTeamLoading,setDashboardTasks}=teamSlice.actions;
+export const {setTeams,setCurrentTeam,setTeamLoading,setDashboardTasks}=teamSlice.actions;
 export default teamSlice.reducer;

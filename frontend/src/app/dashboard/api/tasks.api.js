@@ -6,7 +6,7 @@ const handleRequest = async (requestFn) => {
     return { success: true, data };
   } catch (error) {
     console.error("❌ API Error:", error?.response?.data || error.message);
-
+    alert("API Error: " + (error?.response?.data?.error || error?.message || "Something went wrong"));
     return {
       success: false,
       error: {
@@ -47,7 +47,7 @@ export const getTasksForUser = async (params={}) => {
 
 // ✅ Update a task
 export const updateTask = async (id, updates) => {
-  return handleRequest(() => axiosInstance.put(`/tasks/${id}`, updates));
+  return handleRequest(() => axiosInstance.put(`/tasks/update/${id}`, updates));
 };
 
 // ✅ Delete a task

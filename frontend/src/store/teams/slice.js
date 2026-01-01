@@ -1,4 +1,5 @@
 import { createSlice, current } from '@reduxjs/toolkit';
+import { set } from 'date-fns';
 
 
 const initialState = {
@@ -18,7 +19,9 @@ const initialState = {
         status: "",
         priority: "",
         q: ""
-    }
+    },
+    kanbantasks:[],
+    kanbanLoading: false
 };
 
 
@@ -57,6 +60,12 @@ const teamSlice = createSlice({
 
         setTeamTasksPage(state, action) {
             state.teamTasksPagination.page = action.payload;
+        },
+        setKanbanTasks(state, action) {
+            state.kanbantasks = action.payload;
+        },
+        setKanbanLoading(state, action) {   
+            state.kanbanLoading = action.payload;
         }
     }
 })
@@ -64,5 +73,5 @@ const teamSlice = createSlice({
 export const { setTeams, setCurrentTeam, setTeamLoading, setDashboardTasks, setTeamTasks,
     setTeamTasksLoading,
     setTeamTasksFilters,
-    setTeamTasksPage } = teamSlice.actions;
+    setTeamTasksPage,setKanbanLoading,setKanbanTasks } = teamSlice.actions;
 export default teamSlice.reducer;

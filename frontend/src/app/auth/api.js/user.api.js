@@ -30,3 +30,13 @@ export const logoutUser = async () => {
         return false;
     }
 }
+
+export const getAllUsers = async () => {
+    try {
+        const {data} = await axiosInstance.get("/users/allusers"); 
+        return data;
+    } catch (error) {
+        console.log(error);
+        throw error; // ✅ Throw error instead of returning null
+    }
+}

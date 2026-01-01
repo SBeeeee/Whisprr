@@ -32,3 +32,7 @@ export const getTeamById = async (teamId) => {
 export const getteamtasks = async (teamId,params) => {
   return handleRequest(() => axiosInstance.get(`/teams/tasks/${teamId}`, { params }));
 }
+
+export const addmembertoTeam = async (teamId, memberData) => {
+  return handleRequest(() => axiosInstance.post(`/teams/addmember/${teamId}`, memberData));
+}

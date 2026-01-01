@@ -148,28 +148,47 @@ export const getTeamsDashboard = async (userId, filters = {}) => {
   };
 };
 
-export const GetTeamTasks=async(teamId,filters={})=>{
-  const {
+export const GetTeamTasks = async (teamId, filters = {}) => {
+  let {
+    page = 1,
+    limit = 5,
     status,
     priority,
     assignedTo,
     q
   } = filters;
 
-  const taskQuery = {
-    team: teamId
+  page = Number(page);
+  limit = Number(limit);
+
+  const skip = (page - 1) * limit;
+
+  const query = { team: teamId };
+
+  if (status) query.status = status;
+  if (priority) query.priority = priority;
+  if (assignedTo) query.assignedTo = assignedTo;
+  if (q) query.title = { $regex: q, $options: "i" };
+
+  const [tasks, total] = await Promise.all([
+    Task.find(query)
+      .populate("assignedTo", "username")
+      .populate("createdBy", "username")
+      .sort({ dueDate: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+
+    Task.countDocuments(query)
+  ]);
+
+  return {
+    tasks,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    }
   };
-
-  if (status) taskQuery.status = status;
-  if (priority) taskQuery.priority = priority;
-  if (assignedTo) taskQuery.assignedTo = assignedTo;
-  if (q) taskQuery.title = { $regex: q, $options: "i" };
-
-  const tasks = await Task.find(taskQuery)
-    .populate("assignedTo", "username")
-    .populate("createdBy", "username")
-    .sort({ dueDate: 1 })
-    .lean();
-
-  return tasks;
-}
+};

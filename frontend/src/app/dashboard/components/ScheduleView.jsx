@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
 import Card from "../../../components/Card";
 import HorizontalScheduleTable from "./ScheduleHorizontalView";
-import FilterBar from "./FilterBar";
+import FilterBar from "../../../components/FilterBar";
 import { getSchedule } from "../api/schedules.api";
 import { useDispatch } from "react-redux";
 import { setSchedules } from "@/store/schedules/slice";

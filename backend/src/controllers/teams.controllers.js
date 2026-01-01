@@ -76,12 +76,18 @@ export const createTeamController = async (req, res) => {
   export const getTeamTasksController = async (req, res) => {
     try {
       const { teamId } = req.params;
+      const result = await GetTeamTasks(teamId, req.query);
   
-      const tasks = await GetTeamTasks(teamId, req.query);
-  
-      res.json({ success: true, tasks });
+      res.json({
+        success: true,
+        ...result
+      });
     } catch (err) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({
+        success: false,
+        message: err.message
+      });
     }
   };
+  
   

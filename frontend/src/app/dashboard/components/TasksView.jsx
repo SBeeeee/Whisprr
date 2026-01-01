@@ -5,7 +5,7 @@ import { setTodos } from "@/store/todos/slice";
 import { useDispatch } from "react-redux";
 import { getTasksForUser } from "../api/tasks.api";
 import {useEffect,useState} from 'react';
-import FilterBar from "./FilterBar";
+import FilterBar from "../../../components/FilterBar";
 import ScheduleTable from "./TaskHorizontallist";
 
 export default function TasksView({ tasks, setOpenTask }) {

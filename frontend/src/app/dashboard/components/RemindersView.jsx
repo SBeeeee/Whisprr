@@ -3,7 +3,7 @@ import { useEffect,useState } from "react";
 import { getRemindersForUser } from "../api/reminders.api";
 import { setReminders } from "@/store/reminders/slice";
 import { useDispatch } from "react-redux";
-import FilterBar from "./FilterBar";
+import FilterBar from "../../../components/FilterBar";
 import Card from "../../../components/Card";
 import RemindersList from "./RemindersList";
 import { Filter } from "lucide-react";

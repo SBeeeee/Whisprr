@@ -8,6 +8,7 @@ import { setCurrentTeam } from "@/store/teams/slice";
 import { useDispatch, useSelector } from "react-redux";
 
 import AddTeamMember from "./AddTeamMember";
+import AddTaskModal from "./AddTaskModal";
 
 export default function DashboardHeader() {
   const { teamId } = useParams();
@@ -18,6 +19,7 @@ export default function DashboardHeader() {
 
   const [loading, setLoading] = useState(true);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false); 
 
   /* ================= FETCH TEAM ================= */
   useEffect(() => {
@@ -92,7 +94,9 @@ export default function DashboardHeader() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
+          <button 
+          onClick={() => setIsAddTaskOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
             <Plus size={16} />
             Create Task
           </button>
@@ -115,9 +119,13 @@ export default function DashboardHeader() {
         <AddTeamMember
           open={isAddMemberOpen}
           onClose={() => setIsAddMemberOpen(false)}
-          teamId={teamId}
         />
+        
       )}
+      <AddTaskModal
+        open={isAddTaskOpen}
+        onClose={() => setIsAddTaskOpen(false)}
+      />
     </>
   );
 }

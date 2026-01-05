@@ -24,6 +24,7 @@ export const canModifyTask = async (req, res, next) => {
     // ADMIN → full access
     if (member.role === "admin") {
       req.task = task;
+      req.teamRole = "admin";
       return next();
     }
   

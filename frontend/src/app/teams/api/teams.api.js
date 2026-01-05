@@ -5,7 +5,7 @@ const handleRequest = async (requestFn) => {
     const { data } = await requestFn();
     return { success: true, data };
   } catch (error) {
-    console.error("❌ API Error:", error?.response?.data || error.message);
+    alert(error?.response?.data?.error || error?.message || "Something went wrong");
 
     return {
       success: false,

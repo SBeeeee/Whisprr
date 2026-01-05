@@ -8,7 +8,7 @@ import {
     getAnalysisTask,
     ShiftToTommorow
 } from "../Services/tasks.services.js";
-import Team from "../models/Team.model.js";
+import Team from "../models/Team.models.js";
 // Create
 export async function createTaskController(req, res) {
     try {

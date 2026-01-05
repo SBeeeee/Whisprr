@@ -1,5 +1,5 @@
-import Task from "../models/tasks.model";
-import Team from "../models/Team.models";
+import Task from "../models/tasks.model.js";
+import Team from "../models/Team.models.js";
 export const canModifyTask = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.id);

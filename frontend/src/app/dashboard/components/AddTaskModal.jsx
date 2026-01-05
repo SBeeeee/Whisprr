@@ -13,98 +13,100 @@ export default function AddTaskModal({ open, onClose, onAdd, users = [] }) {
   const [recurring, setRecurring] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Reminder states (extra)
   const [setReminder, setSetReminder] = useState(false);
   const [reminderTime, setReminderTime] = useState("");
- 
 
-  
+  const submit = async () => {
+    try {
+      setLoading(true);
+      if (!title || !dueDate) {
+        alert("Title and Due Date are required");
+        return;
+      }
 
-  const submit = async() => {
-    try{
-    setLoading(true);
-    if (!title || !dueDate) {
-      alert("Title and Due Date are required");
-      return;
-    };
-    if(setReminder){
-      const datetime = new Date(`${dueDate}T${reminderTime}:00`).toISOString();
-      const response=await createReminder({task:description,datetime});
-      console.log("Reminder created successfully",response);
-      alert("created reminder");
+      if (setReminder) {
+        const datetime = new Date(
+          `${dueDate}T${reminderTime}:00`
+        ).toISOString();
+        await createReminder({ task: description, datetime });
+        alert("created reminder");
+      } else {
+        await createTask({ title, description, dueDate, priority });
+        alert("created task");
+      }
+
+      setTitle("");
+      setDescription("");
+      setDueDate("");
+      setPriority("medium");
+      setLabels("");
+      setRecurring(false);
+      setSetReminder(false);
+      setReminderTime("");
+    } catch (error) {
+      console.error("❌ Error:", error);
+    } finally {
+      setLoading(false);
     }
-    else{
-      const response=await createTask({title,description,dueDate,priority});
-      console.log("Task created successfully",response);
-      alert("created task");
-    }
-
-    // reset
-    setTitle("");
-    setDescription("");
-    setDueDate("");
-    setPriority("medium");
-    setLabels("");
-    setRecurring(false);
-    setSetReminder(false);
-    setReminderTime("");
-  }
-  catch(error){
-    console.error("❌ Error creating task or reminder:",error);
-  }
-  finally{
-    setLoading(false);
-  }
   };
 
   return (
     <Modal open={open} onClose={onClose} title="Add Task">
-      {/* Backdrop + Scrollable content */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-          onClick={onClose}
-        ></div>
+      <div className="flex flex-col max-h-[80vh]">
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto pr-1 space-y-5">
 
-        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          <h2 className="text-xl font-semibold mb-4">Add New Task</h2>
-          <div className="space-y-4">
-            {/* Title */}
+          {/* Title */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+              Task title
+            </label>
             <input
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder="Task title"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2 h-11
+                         focus:ring-2 focus:ring-black/10 outline-none"
+              placeholder="Design landing page"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
+          </div>
 
-            {/* Description */}
+          {/* Description */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+              Description
+            </label>
             <textarea
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder="Task description"
-              rows="3"
+              rows={3}
+              className="w-full rounded-xl border border-gray-300 px-4 py-2
+                         resize-none focus:ring-2 focus:ring-black/10 outline-none"
+              placeholder="Task details..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+          </div>
 
-            {/* Due Date */}
+          {/* Date + Priority */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-600 mb-2 block">
-                Due Date
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Due date
               </label>
               <input
                 type="date"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full rounded-xl border border-gray-300 px-4 py-2 h-11
+                           focus:ring-2 focus:ring-black/10 outline-none"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
               />
             </div>
-            {/* Priority */}
+
             <div>
-              <label className="text-sm font-medium text-gray-600 mb-2 block">
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
                 Priority
               </label>
               <select
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full rounded-xl border border-gray-300 px-4 py-2 h-11
+                           focus:ring-2 focus:ring-black/10 outline-none"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
               >
@@ -113,106 +115,77 @@ export default function AddTaskModal({ open, onClose, onAdd, users = [] }) {
                 <option value="high">High</option>
               </select>
             </div>
+          </div>
 
-            {/* Labels */}
-            <div>
-              <label className="text-sm font-medium text-gray-600 mb-2 block">
-                Labels (comma separated)
-              </label>
-              <input
-                type="text"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="e.g. work, personal"
-                value={labels}
-                onChange={(e) => setLabels(e.target.value)}
-              />
-            </div>
+          {/* Labels */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+              Labels
+            </label>
+            <input
+              className="w-full rounded-xl border border-gray-300 px-4 py-2 h-11
+                         focus:ring-2 focus:ring-black/10 outline-none"
+              placeholder="ui, frontend"
+              value={labels}
+              onChange={(e) => setLabels(e.target.value)}
+            />
+          </div>
 
-            {/* Recurring */}
-            <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+          {/* Toggles */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50">
               <input
                 type="checkbox"
                 checked={recurring}
                 onChange={() => setRecurring(!recurring)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
-              Recurring Task
+              <span className="text-sm font-medium">Recurring task</span>
             </label>
 
-            {/* Assign to users */}
-            {users.length > 0 && (
-              <div>
-                <label className="text-sm font-medium text-gray-600 mb-2 block">
-                  Assign To
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {users.map((user) => (
-                    <button
-                      key={user._id}
-                      type="button"
-                      onClick={() => toggleAssigned(user._id)}
-                      className={`px-3 py-1 rounded-xl border text-sm transition ${
-                        assignedTo.includes(user._id)
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      {user.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Reminder */}
-            <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+            <label className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50">
               <input
                 type="checkbox"
                 checked={setReminder}
                 onChange={() => setSetReminder(!setReminder)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
-              Set Reminder
+              <span className="text-sm font-medium">Set reminder</span>
             </label>
-
-            {setReminder && (
-              <div className="space-y-3 p-4 bg-blue-50/30 rounded-xl border border-blue-100">
-                <div>
-                  <label className="text-sm font-medium text-gray-600 mb-2 block">
-                    Reminder Time
-                  </label>
-                  <input
-                    type="time"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                    value={reminderTime}
-                    onChange={(e) => setReminderTime(e.target.value)}
-                  />
-                </div>     
-              </div>
-            )}
           </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-6  pb-2">
-            <button
-              onClick={onClose}
-              disabled={loading}
-              className="px-5 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 transition"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={submit}
-              disabled={loading}
-              className="px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow hover:from-blue-700 hover:to-purple-700 transition"
-            >
-            {loading ? (
-      <Loader size="sm" text="Saving..." className="text-white" />
-    ) : (
-      "Add to Tasks"
-    )}
-            </button>
-          </div>
+          {/* Reminder time */}
+          {setReminder && (
+            <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/40">
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Reminder time
+              </label>
+              <input
+                type="time"
+                className="w-full rounded-xl border border-gray-300 px-4 py-2 h-11
+                           focus:ring-2 focus:ring-black/10 outline-none"
+                value={reminderTime}
+                onChange={(e) => setReminderTime(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Sticky footer */}
+        <div className="pt-4 mt-4 border-t flex justify-end gap-3 bg-white">
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="px-5 py-2 rounded-xl border border-gray-300 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={submit}
+            disabled={loading}
+            className="px-6 py-2 rounded-xl bg-black text-white hover:bg-black/90"
+          >
+            {loading ? <Loader size="sm" text="Saving..." /> : "Add Task"}
+          </button>
         </div>
       </div>
     </Modal>

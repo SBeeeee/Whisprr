@@ -9,6 +9,7 @@ import {
   setScratchLoading,
 } from "@/store/scratchpad/slice";
 import { getscratch } from "../api/scratchpad.api";
+import Whiteboard from "./Whiteboard";
 
 export default function ScratchView() {
   const dispatch = useDispatch();
@@ -50,7 +51,7 @@ export default function ScratchView() {
       </div>
 
       {/* ALWAYS mounted */}
-      <Scratchpad />
+  <Whiteboard/>
     </div>
   );
 }

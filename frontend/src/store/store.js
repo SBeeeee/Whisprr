@@ -6,6 +6,7 @@ import reminderReducer from './reminders/slice';
 import scheduleReducer from './schedules/slice';
 import scratchReducer from './scratchpad/slice';
 import teamsReducer from './teams/slice';
+import analyticsReducer from './analytics/slice';
 
 export const store=configureStore({
     reducer:{
@@ -15,6 +16,7 @@ export const store=configureStore({
        schedules: scheduleReducer,
        scratchpad: scratchReducer,
        teams: teamsReducer,
+       analytics: analyticsReducer,
     }
 })
 

@@ -5,7 +5,7 @@ import Card from "../../../components/Card";
 import { gettimer, settimer, resettimer } from "../api/promodoro";
 import AddTimerModal from "./AddTimerModal";
 
-export default function PomodoroTimer() {
+export default function PomodoroTimer({ onOpenTimer }) {
   const [seconds, setSeconds] = useState(25 * 60); // store exact seconds
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -140,7 +140,7 @@ export default function PomodoroTimer() {
             Break 5m
           </button>
           <button
-  onClick={() => setOpenTimerModal(true)}
+  onClick={ onOpenTimer }
   disabled={syncing}
   className="px-6 py-3 rounded-xl border border-gray-300
              hover:bg-gray-50 transition-colors disabled:opacity-70"
@@ -149,15 +149,7 @@ export default function PomodoroTimer() {
 </button>
 
         </div>
-        <AddTimerModal
-  open={openTimerModal}
-  onClose={() => setOpenTimerModal(false)}
-  onSuccess={(secs) => {
-    setRunning(false);
-    setSeconds(secs);
-  }}
-/>
-
+       
         {syncing && (
           <p className="text-xs text-gray-400 mt-3">⏳ Syncing with server...</p>
         )}

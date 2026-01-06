@@ -16,10 +16,11 @@ export default function AddTimerModal({ open, onClose, onSuccess }) {
     const seconds = mins * 60;
 
     const res = await settimer(seconds);
+
     setLoading(false);
 
     if (res?.success !== false) {
-      onSuccess?.(seconds); // optional callback
+      onSuccess?.(seconds);
       onClose();
       setMinutes("");
     }
@@ -27,7 +28,7 @@ export default function AddTimerModal({ open, onClose, onSuccess }) {
 
   return (
     <Modal open={open} onClose={onClose} title="Set Timer">
-      <div className="space-y-5">
+      <div className="space-y-4">
         {/* Input */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -53,7 +54,9 @@ export default function AddTimerModal({ open, onClose, onSuccess }) {
         <div className="flex justify-end gap-3 pt-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100"
+            disabled={loading}
+            className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100
+                       transition disabled:opacity-60"
           >
             Cancel
           </button>
@@ -62,7 +65,7 @@ export default function AddTimerModal({ open, onClose, onSuccess }) {
             onClick={handleSave}
             disabled={loading}
             className="px-5 py-2 rounded-xl bg-black text-white
-                       hover:bg-black/90 disabled:opacity-60"
+                       hover:bg-black/90 transition disabled:opacity-60"
           >
             {loading ? "Saving..." : "Set Timer"}
           </button>

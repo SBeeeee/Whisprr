@@ -1,5 +1,5 @@
 "use client"
-import {useEffect} from "react"
+import {useEffect,useState} from "react"
 import { CheckSquare, CheckCircle2, Bell, Calendar, ChevronRight, PlusCircle } from "lucide-react";
 import Card from "../../../components/Card";
 import Stat from "./Stat";
@@ -9,7 +9,6 @@ import RemindersList from "./RemindersList";
 import PomodoroTimer from "./PomodoroTimer";
 import { getSchedule } from "../api/schedules.api";
 import { getTasks } from "../api/tasks.api";
-import { useDispatch } from "react-redux";
 import { setSchedules } from "@/store/schedules/slice";
 import { setTodos } from "@/store/todos/slice";
 import { getTasksForUser } from "../api/tasks.api";
@@ -17,6 +16,10 @@ import { getRemindersForUser } from "../api/reminders.api";
 import { setReminders } from "@/store/reminders/slice";
 import { marktaskdone } from "../api/tasks.api";
 import { markScheduledone } from "../api/schedules.api";
+import { getAnalysisTask } from "../api/tasks.api";
+import { setAnalyticsData } from "@/store/analytics/slice";
+import { useDispatch, useSelector } from "react-redux";
+import AddTimerModal from "./AddTimerModal";
 export default function DashboardView({ 
   stats, 
   schedule, 
@@ -27,6 +30,8 @@ export default function DashboardView({
   setActive, 
   setOpenTask 
 }) {
+  const [openTimer, setOpenTimer] = useState(false);
+  
   const handleToggleDones=async(scheduleid)=>{
     try{
       const res=await markScheduledone(scheduleid);
@@ -39,6 +44,23 @@ export default function DashboardView({
     }
   }
   const dispatch = useDispatch();
+
+
+const analytics = useSelector(
+  (state) => state.analytics.analyticsData
+);
+
+const fetchAnalytics = async () => {
+  try {
+    const res = await getAnalysisTask();
+    if (res?.data?.data) {
+      dispatch(setAnalyticsData(res.data.data));
+    }
+  } catch (error) {
+    console.error("❌ Error fetching analytics:", error);
+  }
+};
+
   const fetchReminders=async()=>{
     try{
       const res=await getRemindersForUser({status:"pending"});
@@ -81,6 +103,7 @@ export default function DashboardView({
   };
 
   useEffect(() => {
+    fetchAnalytics();
     fetchSchedules();
     fetchTasks();
     fetchReminders();
@@ -101,30 +124,33 @@ export default function DashboardView({
     <>
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Stat 
-          icon={<CheckSquare className="w-6 h-6" />} 
-          title="Tasks Today" 
-          value={stats.tasksToday}
-          gradient="from-blue-500 to-blue-600" 
-        />
-        <Stat 
-          icon={<CheckCircle2 className="w-6 h-6" />} 
-          title="Completed" 
-          value={stats.completed}
-          gradient="from-green-500 to-emerald-600" 
-        />
-        <Stat 
-          icon={<Bell className="w-6 h-6" />} 
-          title="Reminders Today" 
-          value={stats.remindersToday}
-          gradient="from-orange-500 to-red-500" 
-        />
-        <Stat 
-          icon={<Calendar className="w-6 h-6" />} 
-          title="Events Today" 
-          value={stats.scheduleToday}
-          gradient="from-purple-500 to-indigo-600" 
-        />
+      <Stat
+    icon={<CheckSquare className="w-6 h-6" />}
+    title="Pending Events"
+    value={analytics.pendingEvents}
+    gradient="from-blue-500 to-blue-600"
+  />
+
+  <Stat
+    icon={<Calendar className="w-6 h-6" />}
+    title="Pending Today"
+    value={analytics.pendingEventsToday}
+    gradient="from-purple-500 to-indigo-600"
+  />
+
+  <Stat
+    icon={<CheckCircle2 className="w-6 h-6" />}
+    title="Done Today"
+    value={analytics.todaysDoneEvents}
+    gradient="from-green-500 to-emerald-600"
+  />
+
+  <Stat
+    icon={<Bell className="w-6 h-6" />}
+    title="Overdue"
+    value={analytics.overdueEvents}
+    gradient="from-red-500 to-orange-600"
+  />
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8 mb-8">
@@ -180,8 +206,14 @@ export default function DashboardView({
           <RemindersList items={reminders.slice(0,5)} />
         </Card>
 
-        <PomodoroTimer />
+      <PomodoroTimer onOpenTimer={() => setOpenTimer(true)} />
+        
       </div>
+      <AddTimerModal
+  open={openTimer}
+  onClose={() => setOpenTimer(false)}
+/>
+
     </>
   );
 }

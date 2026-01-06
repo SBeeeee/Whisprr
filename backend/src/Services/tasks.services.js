@@ -1,5 +1,7 @@
 import Task from "../models/tasks.model.js"
 import User from "../models/Users.models.js"
+import Schedule from "../models/schedule.model.js";
+import mongoose from "mongoose";
 
 export async function createTask(data) {
     const task = await Task.create(data);
@@ -119,24 +121,109 @@ export async function MarkasDone(taskId) {
     return task;
 }
 
-export async function getAnalysisTask(userId){
-    const totalTasks = await Task.countDocuments({
-        $or: [{ createdBy: userId }, { assignedTo: userId }],
-    });
+export async function getAnalysisTask(userId) {
+  
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
 
-    const completedTasks = await Task.countDocuments({
-        $or: [{ createdBy: userId }, { assignedTo: userId }],
-        status: "completed",
-    });
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
 
-    const pendingTasks = totalTasks - completedTasks;
+  /* =========================
+     1. PENDING EVENTS (ALL)
+     ========================= */
 
-    return {
-        totalTasks,
-        completedTasks,
-        pendingTasks,
-    };
+  const pendingTasks = await Task.countDocuments({
+    $or: [
+      { createdBy: userId },
+      { assignedTo: userId }
+    ],
+    status:"pending",
+  });
+
+  const pendingSchedules = await Schedule.countDocuments({
+    createdBy: userId,
+    status: "pending",
+  });
+
+  const pendingEvents = pendingTasks + pendingSchedules;
+
+  /* =========================
+     2. PENDING EVENTS TODAY
+     ========================= */
+
+  const pendingTasksToday = await Task.countDocuments({
+    $or: [
+      { createdBy: userId },
+      { assignedTo: userId }
+    ],
+    status:"pending",
+    dueDate: { $gte: startOfToday, $lte: endOfToday },
+  });
+
+  const pendingSchedulesToday = await Schedule.countDocuments({
+    createdBy: userId,
+    status: "pending",
+    start: { $gte: startOfToday, $lte: endOfToday },
+  });
+
+  const pendingEventsToday =
+    pendingTasksToday + pendingSchedulesToday;
+
+  /* =========================
+     3. TODAY'S DONE EVENTS
+     ========================= */
+
+  const tasksDoneToday = await Task.countDocuments({
+    $or: [
+      { createdBy: userId },
+      { assignedTo: userId }
+    ],
+    status: "completed",
+    updatedAt: { $gte: startOfToday, $lte: endOfToday },
+  });
+
+  const schedulesDoneToday = await Schedule.countDocuments({
+    createdBy: userId,
+    status: "completed",
+    updatedAt: { $gte: startOfToday, $lte: endOfToday },
+  });
+
+  const todaysDoneEvents =
+    tasksDoneToday + schedulesDoneToday;
+
+  /* =========================
+     4. OVERDUE EVENTS 🔥
+     ========================= */
+
+  const overdueTasks = await Task.countDocuments({
+    $or: [
+      { createdBy: userId },
+      { assignedTo: userId }
+    ],
+    status:"pending",
+    dueDate: { $lt: startOfToday },
+  });
+
+  const overdueSchedules = await Schedule.countDocuments({
+    createdBy: userId,
+    status: "pending",
+    start: { $lt: startOfToday },
+  });
+
+  const overdueEvents =
+    overdueTasks + overdueSchedules;
+
+  /* ========================= */
+
+  return {
+    pendingEvents,
+    pendingEventsToday,
+    todaysDoneEvents,
+    overdueEvents,
+  };
 }
+
 
 export async function ShiftToTommorow(taskId){
     const task = await Task.findById(taskId);

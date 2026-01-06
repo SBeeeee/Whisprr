@@ -2,7 +2,7 @@ import { createTaskController,getTaskController,
     getUserTasksController,
     updateTaskController,
     deleteTaskController,
-    MarkasDoneController,ShiftToTommorowController } from "../controllers/tasks.comtroller.js";
+    MarkasDoneController,ShiftToTommorowController,getAnalysisTaskController } from "../controllers/tasks.comtroller.js";
 import express from "express";
 import { verifyUser } from "../middlewares/auth.middleware.js";
 import { isTeamMember } from "../middlewares/isTeamMember.js";
@@ -17,5 +17,6 @@ router.put("/update/:id", verifyUser, canModifyTask,updateTaskController);
 router.delete("/delete/:id", verifyUser, canModifyTask,deleteTaskController);
 router.put("/markdone/:id", verifyUser,canModifyTask, MarkasDoneController);
 router.put("/shifttotomorrow/:id", verifyUser, canModifyTask,ShiftToTommorowController);
+router.get("/analytics/summary", verifyUser,getAnalysisTaskController);
 
 export default router;

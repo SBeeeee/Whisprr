@@ -31,7 +31,7 @@ export default function DashboardView({
   setOpenTask 
 }) {
   const [openTimer, setOpenTimer] = useState(false);
-  
+  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const handleToggleDones=async(scheduleid)=>{
     try{
       const res=await markScheduledone(scheduleid);
@@ -205,13 +205,21 @@ const fetchAnalytics = async () => {
           </div>
           <RemindersList items={reminders.slice(0,5)} />
         </Card>
+        <PomodoroTimer
+  seconds={timerSeconds}
+  setSeconds={setTimerSeconds}
+  onOpenTimer={() => setOpenTimer(true)}
+/>
 
-      <PomodoroTimer onOpenTimer={() => setOpenTimer(true)} />
-        
+
+
+    
       </div>
+      
       <AddTimerModal
   open={openTimer}
   onClose={() => setOpenTimer(false)}
+  onSuccess={(secs) => setTimerSeconds(secs)}
 />
 
     </>

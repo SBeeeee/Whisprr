@@ -5,8 +5,9 @@ import Card from "../../../components/Card";
 import { gettimer, settimer, resettimer } from "../api/promodoro";
 import AddTimerModal from "./AddTimerModal";
 
-export default function PomodoroTimer({ onOpenTimer }) {
-  const [seconds, setSeconds] = useState(25 * 60); // store exact seconds
+export default function PomodoroTimer({ seconds,
+  setSeconds,
+  onOpenTimer, }) {
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);

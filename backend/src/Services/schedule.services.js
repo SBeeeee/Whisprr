@@ -63,6 +63,19 @@ export async function getSchedulesWithFilters(userId, filters) {
 
   return Schedule.find(query).sort({ start: 1 });
 }
+export async function getCalenderService(userId,start,end){
+  return Schedule.find({
+    createdBy: userId,
+    start: {
+      $lte: new Date(end),   // event starts before range ends
+    },
+    end: {
+      $gte: new Date(start), // event ends after range starts
+    },
+  })
+    .sort({ start: 1 })
+    .lean();
+}
 
 export async function markdoneSchedule(scheduleId) {
   const schedule = await Schedule.findById(scheduleId);

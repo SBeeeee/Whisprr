@@ -1,7 +1,7 @@
 import {
     createSchedule,
     getSchedulesWithFilters,
-    markdoneSchedule
+    markdoneSchedule,getCalenderService
   } from "../Services/schedule.services.js";
   
   export async function createScheduleController(req, res) {
@@ -31,6 +31,35 @@ import {
     }
   }
 
+  export async function getCalenderController(req,res){
+    try {
+      const { start, end } = req.query;
+      
+      if (!start || !end) {
+        return res.status(400).json({
+          success: false,
+          message: "start and end query params are required",
+        });
+      }
+     let startt = start.trim();
+    let endd = end.trim();
+      const schedules = await getCalenderService(
+        req.id,
+        startt,
+        endd
+      );
+  
+      res.status(200).json({
+        success: true,
+        data: schedules,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
   export async function markdoneScheduleController(req, res) {
     try {
       const { scheduleId } = req.params;

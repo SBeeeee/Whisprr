@@ -16,10 +16,10 @@ import {
 } from "date-fns";
 
 const eventsData = [
-  { title: "Team Meeting", date: "2025-08-10", start: "09:00", end: "10:30", color: "bg-blue-500" },
-  { title: "Lunch Break", date: "2025-08-10", start: "12:00", end: "13:00", color: "bg-green-500" },
-  { title: "Project Update", date: "2025-08-12", start: "14:00", end: "15:30", color: "bg-purple-500" },
-  { title: "Workout", date: "2025-08-15", start: "18:00", end: "19:00", color: "bg-pink-500" },
+  { title: "Team Meeting", date: "2026-01-11", start: "09:00", end: "10:30", color: "bg-blue-500" },
+  { title: "Lunch Break", date: "2026-01-11", start: "12:00", end: "13:00", color: "bg-green-500" },
+  { title: "Project Update", date: "2026-01-11", start: "14:00", end: "15:30", color: "bg-purple-500" },
+  { title: "Workout", date: "2026-01-11", start: "18:00", end: "19:00", color: "bg-pink-500" },
   { title: "Lunch Break", date: "2025-08-10", start: "12:00", end: "13:00", color: "bg-green-500" },
   { title: "Lunch Break", date: "2025-08-10", start: "12:00", end: "13:00", color: "bg-green-500" },
   { title: "Lunch Break", date: "2025-08-10", start: "12:00", end: "13:00", color: "bg-green-500" },

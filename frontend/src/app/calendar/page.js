@@ -20,13 +20,9 @@ export default function GoogleCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("month");
   const [selectedDate, setSelectedDate] = useState(new Date());
-
-  // 🔴 SAME AS BEFORE (modal state)
   const [showModal, setShowModal] = useState(false);
   const [modalDay, setModalDay] = useState(null);
   const [modalEvents, setModalEvents] = useState([]);
-
-  // 🔴 ONLY CHANGE: events now come from API
   const [eventsData, setEventsData] = useState([]);
 
   const MAX_PREVIEWS = 2;
@@ -54,7 +50,7 @@ export default function GoogleCalendar() {
           date: format(new Date(ev.start), "yyyy-MM-dd"),
           start: format(new Date(ev.start), "HH:mm"),
           end: format(new Date(ev.end), "HH:mm"),
-          color: "bg-blue-500", // SAME UI
+          color: "bg-blue-500",
         }));
 
         setEventsData(mapped);
@@ -66,7 +62,7 @@ export default function GoogleCalendar() {
     fetchCalendar();
   }, [currentDate]);
 
-  /* ================= HELPERS (UNCHANGED) ================= */
+  /* ================= HELPERS ================= */
   const getEventsForDay = (day) =>
     eventsData.filter((e) => e.date === format(day, "yyyy-MM-dd"));
 
@@ -89,167 +85,226 @@ export default function GoogleCalendar() {
 
   /* ================= UI ================= */
   return (
-    <div className="w-full h-full bg-white rounded-xl shadow-lg p-4">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2">
-          <button onClick={() => setCurrentDate(subMonths(currentDate, 1))}>◀</button>
-          <button onClick={() => {
-            const now = new Date();
-            setCurrentDate(now);
-            setSelectedDate(now);
-            setView("month");
-          }}>
-            Today
-          </button>
-          <button onClick={() => setCurrentDate(addMonths(currentDate, 1))}>▶</button>
-        </div>
-
-        <h2 className="text-2xl font-bold">
-          {format(currentDate, "MMMM yyyy")}
-        </h2>
-
-        <div className="flex gap-2">
-          <button onClick={() => setView("month")}>Month</button>
-          <button onClick={() => setView("day")}>Day</button>
-        </div>
-      </div>
-
-      {/* ================= MONTH VIEW ================= */}
-      {view === "month" && (
-        <div className="grid grid-cols-7 gap-2">
-          {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d) => (
-            <div key={d} className="text-center font-semibold text-gray-600">
-              {d}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="backdrop-blur-xl bg-white/95 rounded-3xl border border-blue-200 shadow-lg shadow-blue-500/10 p-6 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+                className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-xl hover:shadow-blue-500/40"
+              >
+                ◀
+              </button>
+              <button
+                onClick={() => {
+                  const now = new Date();
+                  setCurrentDate(now);
+                  setSelectedDate(now);
+                  setView("month");
+                }}
+                className="px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-sky-600 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105"
+              >
+                Today
+              </button>
+              <button
+                onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+                className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-xl hover:shadow-blue-500/40"
+              >
+                ▶
+              </button>
             </div>
-          ))}
 
-          {(() => {
-            const cells = [];
-            let day = startDate;
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-600 bg-clip-text text-transparent">
+              {format(currentDate, "MMMM yyyy")}
+            </h2>
 
-            while (day <= endDate) {
-              const clone = day;
-              const dayEvents = getEventsForDay(day);
-              const previews = dayEvents.slice(0, MAX_PREVIEWS);
-              const overflow = dayEvents.length - previews.length;
-
-              cells.push(
-                <div
-                  key={day.getTime()}
-                  onClick={() => {
-                    setSelectedDate(clone);
-                    setView("day");
-                  }}
-                  className={`border rounded-lg h-28 p-2 cursor-pointer flex flex-col gap-1 hover:bg-gray-100 ${
-                    !isSameMonth(day, monthStart) ? "bg-gray-50 text-gray-400" : ""
-                  }`}
-                >
-                  <span className="text-sm">{format(day, "d")}</span>
-
-                  <div className="mt-1 flex flex-col gap-1">
-                    {previews.map((ev, i) => (
-                      <button
-                        key={`${ev.id}-${i}`}
-                        className={`text-[11px] truncate rounded px-1 py-[2px] text-white ${ev.color}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDayModal(clone);
-                        }}
-                      >
-                        {ev.title}
-                      </button>
-                    ))}
-
-                    {overflow > 0 && (
-                      <button
-                        className="text-xs text-blue-600 text-left"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDayModal(clone);
-                        }}
-                      >
-                        +{overflow} more
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-
-              day = addDays(day, 1);
-            }
-            return cells;
-          })()}
-        </div>
-      )}
-
-      {/* ================= DAY VIEW ================= */}
-      {view === "day" && (
-        <div className="mt-4">
-          <h3 className="text-xl font-semibold mb-4">
-            {format(selectedDate, "EEEE, MMM dd")}
-          </h3>
-
-          <div className="relative h-[600px] border rounded-lg overflow-y-auto">
-            {hours.map((hour) => (
-              <div key={hour} className="h-16 border-b flex">
-                <div className="w-16 text-right pr-4 text-gray-500 text-sm">
-                  {hour.toString().padStart(2, "0")}:00
-                </div>
-              </div>
-            ))}
-
-            {getEventsForDay(selectedDate).map((event, index) => {
-              const startMinutes = timeToMinutes(event.start);
-              const endMinutes = timeToMinutes(event.end);
-              const top = (startMinutes / 60) * 64;
-              const height = ((endMinutes - startMinutes) / 60) * 64;
-
-              return (
-                <div
-                  key={`${event.id}-${index}`}
-                  className={`absolute left-20 right-4 rounded-lg text-white p-2 ${event.color}`}
-                  style={{ top, height }}
-                >
-                  <div className="font-semibold text-sm">{event.title}</div>
-                  <div className="text-xs">
-                    {event.start} – {event.end}
-                  </div>
-                </div>
-              );
-            })}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setView("month")}
+                className={`px-6 py-2 rounded-xl font-medium transition-all duration-300 ${
+                  view === "month"
+                    ? "bg-gradient-to-r from-blue-600 to-sky-600 text-white shadow-lg shadow-blue-500/30"
+                    : "bg-white text-blue-600 border-2 border-blue-200 hover:border-blue-400 hover:bg-blue-50"
+                }`}
+              >
+                Month
+              </button>
+              <button
+                onClick={() => setView("day")}
+                className={`px-6 py-2 rounded-xl font-medium transition-all duration-300 ${
+                  view === "day"
+                    ? "bg-gradient-to-r from-blue-600 to-sky-600 text-white shadow-lg shadow-blue-500/30"
+                    : "bg-white text-blue-600 border-2 border-blue-200 hover:border-blue-400 hover:bg-blue-50"
+                }`}
+              >
+                Day
+              </button>
+            </div>
           </div>
         </div>
-      )}
 
-      {/* ================= MODAL (UNCHANGED) ================= */}
-      {showModal && modalDay && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-[420px] relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-2 right-2"
-            >
-              ✕
-            </button>
-
-            <h3 className="text-lg font-bold mb-3">
-              {format(modalDay, "EEEE, MMM dd")}
-            </h3>
-
-            <div className="space-y-2 max-h-[50vh] overflow-y-auto">
-              {modalEvents.map((ev, i) => (
-                <div key={i} className="border rounded p-2">
-                  <div className="font-semibold">{ev.title}</div>
-                  <div className="text-xs text-gray-600">
-                    {ev.start} – {ev.end}
-                  </div>
+        {/* ================= MONTH VIEW ================= */}
+        {view === "month" && (
+          <div className="backdrop-blur-xl bg-white/95 rounded-3xl border border-blue-200 shadow-lg shadow-blue-500/10 p-6">
+            <div className="grid grid-cols-7 gap-4 mb-4">
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+                <div
+                  key={d}
+                  className="text-center font-bold text-blue-700 text-sm uppercase tracking-wider py-2"
+                >
+                  {d}
                 </div>
               ))}
             </div>
+
+            <div className="grid grid-cols-7 gap-4">
+              {(() => {
+                const cells = [];
+                let day = startDate;
+
+                while (day <= endDate) {
+                  const clone = day;
+                  const dayEvents = getEventsForDay(day);
+                  const previews = dayEvents.slice(0, MAX_PREVIEWS);
+                  const overflow = dayEvents.length - previews.length;
+                  const isToday = isSameDay(day, new Date());
+
+                  cells.push(
+                    <div
+                      key={day.getTime()}
+                      onClick={() => {
+                        setSelectedDate(clone);
+                        setView("day");
+                      }}
+                      className={`rounded-2xl h-32 p-3 cursor-pointer flex flex-col gap-1 transition-all duration-300 hover:scale-105 ${
+                        !isSameMonth(day, monthStart)
+                          ? "bg-gray-50 text-gray-400 border-2 border-gray-100"
+                          : isToday
+                          ? "bg-gradient-to-br from-blue-500 to-sky-500 text-white shadow-xl shadow-blue-500/30 border-2 border-blue-400"
+                          : "bg-white border-2 border-blue-100 text-slate-700 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/10"
+                      }`}
+                    >
+                      <div className={`text-sm font-semibold ${isToday ? "text-white" : "text-blue-600"}`}>
+                        {format(day, "d")}
+                      </div>
+                      <div className="space-y-1 flex-1 overflow-hidden">
+                        {previews.map((ev, i) => (
+                          <div
+                            key={`${ev.id}-${i}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDayModal(clone);
+                            }}
+                            className="text-xs px-2 py-1 rounded-lg bg-gradient-to-r from-blue-500 to-sky-500 text-white truncate font-medium shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
+                          >
+                            {ev.title}
+                          </div>
+                        ))}
+                        {overflow > 0 && (
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDayModal(clone);
+                            }}
+                            className={`text-xs px-2 py-1 rounded-lg font-semibold transition-all duration-200 hover:scale-105 ${
+                              isToday
+                                ? "bg-white/30 text-white hover:bg-white/40"
+                                : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                            }`}
+                          >
+                            +{overflow} more
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+
+                  day = addDays(day, 1);
+                }
+                return cells;
+              })()}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* ================= DAY VIEW ================= */}
+        {view === "day" && (
+          <div className="backdrop-blur-xl bg-white/95 rounded-3xl border border-blue-200 shadow-lg shadow-blue-500/10 p-6">
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-sky-600 bg-clip-text text-transparent mb-6">
+              {format(selectedDate, "EEEE, MMM dd")}
+            </h3>
+            <div className="relative">
+              {hours.map((hour) => (
+                <div
+                  key={hour}
+                  className="flex border-b border-blue-100 h-16 hover:bg-blue-50/50 transition-colors duration-200"
+                >
+                  <div className="w-20 flex-shrink-0 text-sm text-blue-600 font-medium pr-4 pt-1">
+                    {hour.toString().padStart(2, "0")}:00
+                  </div>
+                  <div className="flex-1 relative"></div>
+                </div>
+              ))}
+
+              {getEventsForDay(selectedDate).map((event, index) => {
+                const startMinutes = timeToMinutes(event.start);
+                const endMinutes = timeToMinutes(event.end);
+                const top = (startMinutes / 60) * 64;
+                const height = ((endMinutes - startMinutes) / 60) * 64;
+
+                return (
+                  <div
+                    key={`${event.id}-${index}`}
+                    className="absolute left-20 right-4 rounded-xl bg-gradient-to-br from-blue-500 to-sky-500 text-white p-3 shadow-xl shadow-blue-500/30 border-2 border-blue-400 hover:scale-105 transition-transform duration-300 cursor-pointer"
+                    style={{ top: `${top}px`, height: `${height}px` }}
+                  >
+                    <div className="font-bold text-sm mb-1">{event.title}</div>
+                    <div className="text-xs opacity-90">
+                      {event.start} – {event.end}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ================= MODAL ================= */}
+        {showModal && modalDay && (
+          <div className="fixed inset-0 bg-blue-900/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="backdrop-blur-xl bg-white/95 rounded-3xl border border-blue-200 shadow-2xl shadow-blue-500/20 max-w-lg w-full p-8 relative">
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-sky-500 text-white shadow-lg transition-all duration-300 flex items-center justify-center text-xl hover:rotate-90 hover:scale-110"
+              >
+                ✕
+              </button>
+
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-sky-600 bg-clip-text text-transparent mb-6">
+                {format(modalDay, "EEEE, MMM dd")}
+              </h3>
+
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {modalEvents.map((ev, i) => (
+                  <div
+                    key={i}
+                    className="rounded-xl bg-gradient-to-r from-blue-50 to-sky-50 border-2 border-blue-200 p-4 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105"
+                  >
+                    <div className="font-bold text-blue-900 text-lg mb-2">
+                      {ev.title}
+                    </div>
+                    <div className="text-sm text-blue-600">
+                      {ev.start} – {ev.end}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

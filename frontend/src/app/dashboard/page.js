@@ -13,6 +13,7 @@ import ScheduleView from "./components/ScheduleView";
 import TasksView from "./components/TasksView";
 import RemindersView from "./components/RemindersView";
 import ScratchView from "./components/ScratchView";
+import VoiceToTextDemo from "./components/VoiceToTextDemo";
 
 export default function Page() {
   const username = "Alex";
@@ -198,6 +199,7 @@ export default function Page() {
             background: linear-gradient(135deg, #2563eb, #7c3aed);
           }
         `}</style>
+        <VoiceToTextDemo/>
       </div>
     </PrivateRoute>
   );

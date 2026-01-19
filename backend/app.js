@@ -11,7 +11,7 @@ import scheduleRouter from "./src/routes/schedule.routes.js";
 import { connectDB } from "./src/lib/database.js";
 import scratchrouter from "./src/routes/scratchpad.routes.js";
 import teamrouter from "./src/routes/teams.routes.js";
-
+import voicerouter from "./src/routes/voice.routes.js"
 dotenv.config()
 
 const app=express();
@@ -34,6 +34,7 @@ app.use("/api/tasks",taskRouter);
 app.use("/api/schedules",scheduleRouter);
 app.use("/api/scratchpad",scratchrouter);
 app.use("/api/teams",teamrouter);
+app.use("/api/voice",voicerouter);
 
 app.listen(process.env.PORT, () => {
     console.log("Server is running on http://localhost:" + process.env.PORT);

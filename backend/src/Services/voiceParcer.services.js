@@ -1,3 +1,5 @@
+import { parseVoiceCommandWithAI } from "./voiceParser.ai.service.js";
+
 export function parseVoiceCommand(voiceText) {
   const normalized = voiceText.toLowerCase().trim();
   
@@ -16,6 +18,22 @@ export function parseVoiceCommand(voiceText) {
     keywords,
     originalText: voiceText,
   };
+}
+
+/**
+ * Parse voice: AI first, then regex fallback when AI fails.
+ * Returns same shape as parseVoiceCommand. Use this in the controller.
+ */
+export async function parseVoiceCommandWithFallback(voiceText) {
+  // Try AI parser first
+  const aiParsed = await parseVoiceCommandWithAI(voiceText);
+  if (aiParsed && aiParsed.intent !== "UNKNOWN") {
+    return aiParsed;
+  }
+  
+  // Fallback to regex parser
+  const parsed = parseVoiceCommand(voiceText);
+  return parsed;
 }
 
 // ============================================
@@ -135,22 +153,32 @@ function extractEntities(text, intent) {
   
   return entities;
 }
+
 function extractTitle(text, intent) {
   // For CREATE_TASK
   if (intent === "CREATE_TASK") {
-    // Remove common prefixes
+    // Remove common prefixes including Hindi
     let title = text
       .replace(/^(create|add|make|new)\s+(a\s+)?(task|todo)\s+(to\s+)?/i, "")
       .replace(/^(remind|remember)\s+me\s+to\s+/i, "")
       .replace(/^i\s+need\s+to\s+/i, "")
-      .replace(/^(schedule|plan)\s+(a\s+)?task\s+(to\s+)?/i, "");
+      .replace(/^(schedule|plan)\s+(a\s+)?task\s+(to\s+)?/i, "")
+      // Hindi command patterns
+      .replace(/^ek\s+(task|todo)\s+(banao|bana|banaiye)\s+/i, "")
+      .replace(/^(task|todo)\s+(banao|bana|banaiye)\s+/i, "")
+      .replace(/^aj\s+ke\s+liye\s+ek\s+(task|todo)\s+bana\s+de\s+/i, "")
+      .replace(/^aj\s+ke\s+liye\s+/i, "")
+      .replace(/\b(banao|bana|banaiye|bana de)\b/gi, "");
     
     // Remove date/time/priority suffixes
     title = title
       .replace(/\s+(by|on|at|before|until)\s+.*/i, "")
       .replace(/\s+(tomorrow|today|tonight|this\s+week)/i, "")
       .replace(/\s+with\s+(high|medium|low)\s+priority/i, "")
-      .replace(/\s+(high|medium|low)\s+priority/i, "");
+      .replace(/\s+(high|medium|low)\s+priority/i, "")
+      // Hindi date words
+      .replace(/\s+(aj|kal|parso|aaj)\b/gi, "")
+      .replace(/\s+(ke\s+liye)\s+/gi, "");
     
     return title.trim() || null;
   }
@@ -195,12 +223,28 @@ function extractTitle(text, intent) {
 function extractDate(text) {
   const now = new Date();
   
-  // Today
+  // Hindi date words
+  if (/\b(aj|aaj)\b/i.test(text)) {
+    return now.toISOString();
+  }
+  
+  if (/\bkal\b/i.test(text)) {
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString();
+  }
+  
+  if (/\bparso\b/i.test(text)) {
+    const dayAfter = new Date(now);
+    dayAfter.setDate(dayAfter.getDate() + 2);
+    return dayAfter.toISOString();
+  }
+  
+  // English date words
   if (/\btoday\b/i.test(text)) {
     return now.toISOString();
   }
   
-  // Tomorrow
   if (/\btomorrow\b/i.test(text)) {
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -249,6 +293,33 @@ function extractDate(text) {
   if (dateMatch) {
     const day = parseInt(dateMatch[1]);
     const month = parseInt(dateMatch[2]) - 1; // JS months are 0-indexed
+    const year = now.getFullYear();
+    
+    const date = new Date(year, month, day);
+    if (date < now) {
+      date.setFullYear(year + 1); // Next year if date has passed
+    }
+    return date.toISOString();
+  }
+  
+  // Enhanced date patterns: "17th of February 2026", "Feb 17 2026", "17 February 2026"
+  const enhancedDateMatch = text.match(/\b(\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})\b/i);
+  if (enhancedDateMatch) {
+    const day = parseInt(enhancedDateMatch[1]);
+    const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+    const month = monthNames.indexOf(enhancedDateMatch[2].toLowerCase());
+    const year = parseInt(enhancedDateMatch[3]);
+    
+    const date = new Date(year, month, day);
+    return date.toISOString();
+  }
+  
+  // Month day format: "Feb 17", "February 17"
+  const monthDayMatch = text.match(/\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})(?:st|nd|rd|th)?\b/i);
+  if (monthDayMatch) {
+    const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+    const month = monthNames.indexOf(monthDayMatch[1].toLowerCase());
+    const day = parseInt(monthDayMatch[2]);
     const year = now.getFullYear();
     
     const date = new Date(year, month, day);

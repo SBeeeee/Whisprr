@@ -1,5 +1,5 @@
 import { executeVoiceAction } from "../Services/voiceAction.service.js";
-import { parseVoiceCommand, validateCommand } from "../Services/voiceParcer.services.js";
+import { parseVoiceCommandWithFallback, validateCommand } from "../Services/voiceParcer.services.js";
 import { executeConfirmedAction } from "../Services/voiceAction.service.js";
 /**
  * Main voice command controller
@@ -28,8 +28,8 @@ export async function voiceCommandController(req, res) {
     // ✅ Log for debugging (optional - remove in production)
     console.log(`[Voice Command] User: ${userId} | Input: "${transcript}"`);
 
-    // 1️⃣ Parse voice text → intent + entities
-    const parsed = parseVoiceCommand(transcript);
+    // 1️⃣ Parse voice text → intent + entities (regex first, then AI fallback for UNKNOWN)
+    const parsed = await parseVoiceCommandWithFallback(transcript);
 
     // ✅ Log parsed result
     console.log(`[Voice Command] Parsed:`, {

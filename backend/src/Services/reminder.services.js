@@ -1,11 +1,10 @@
 import Reminder from "../models/reminders.model.js";
 import User from "../models/Users.models.js"
-
+import timezoneService from "../utils/timezoneService.js";
 
 export const createReminder =async({ task, datetime, userId}) =>{
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
-
 
     const reminder = new Reminder({ task, datetime, phoneNumber:user.phone,user:user.id });
     await reminder.save();
@@ -16,8 +15,8 @@ export const createReminder =async({ task, datetime, userId}) =>{
 }
 
 export const getRemindersToTrigger = async () => {
-    const now = new Date();
-    const target = new Date(now.getTime() + 10 * 60 * 1000);
+    const now = timezoneService.now();
+    const target = now.add(10, 'minutes').utc().toDate();
   
     return await Reminder.find({
       datetime: { $lte: target },
@@ -32,24 +31,20 @@ export const markAsReminded = async (id) => {
 
 export const getuserReminders =async(userId,filters)=>{
   const query = { user: userId };
-  const now = new Date();
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const todayRange = timezoneService.getDayRangeUTC();
 
   if(filters.date === "today" || filters.range === "today"){
-    query.datetime = { $gte: startOfDay, $lte: endOfDay };
+    query.datetime = { $gte: todayRange.start, $lte: todayRange.end };
   }
   if(filters.range === "past"){
-    query.datetime = { $lt: startOfDay };
+    query.datetime = { $lt: todayRange.start };
   }
   if(filters.range === "future"){
-    query.datetime = { $gt: endOfDay };
+    query.datetime = { $gt: todayRange.end };
   }
   if(filters.date && filters.date !== "today"){
-    const d = new Date(filters.date);
-    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
-    const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59);
-    query.datetime = { $gte: start, $lte: end };
+    const specificDateRange = timezoneService.getDayRangeUTC(new Date(filters.date));
+    query.datetime = { $gte: specificDateRange.start, $lte: specificDateRange.end };
   }
   if (filters.search) {
     query.task = { $regex: filters.search, $options: "i" };

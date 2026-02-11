@@ -5,6 +5,7 @@ import Modal from "@/components/Modal";
 import { createReminder } from "../api/reminders.api";
 import { createSchedule } from "../api/schedules.api";
 import Loader from "@/components/Loader";
+import timezoneService from "@/utils/timezoneService.js";
 
 export default function AddScheduleModal({ open, onClose }) {
   const [step, setStep] = useState(0);
@@ -29,9 +30,9 @@ export default function AddScheduleModal({ open, onClose }) {
 
       setLoading(true);
 
-      const startDateTime = new Date(`${date}T${start}:00`).toISOString();
+      const startDateTime = timezoneService.toISOString(`${date}T${start}:00`);
       const endDateTime = end
-        ? new Date(`${date}T${end}:00`).toISOString()
+        ? timezoneService.toISOString(`${date}T${end}:00`)
         : null;
 
       const labelsArray = labels

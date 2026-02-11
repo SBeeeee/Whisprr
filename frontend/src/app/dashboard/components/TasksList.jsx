@@ -1,6 +1,7 @@
 "use client"
 import { Calendar, Clock3, CheckCircle2, Flag } from "lucide-react";
 import { useSelector } from "react-redux";
+import timezoneService from "@/utils/timezoneService.js";
 
 export default function ScheduleTable({ items = [], onToggleDone, full = false }) {
   const { todos } = useSelector((state) => state.todos);
@@ -45,7 +46,7 @@ export default function ScheduleTable({ items = [], onToggleDone, full = false }
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      {new Date(ev.dueDate).toLocaleDateString()}
+                      {timezoneService.formatAPIDateForDisplay(ev.dueDate, 'DD/MM/YYYY')}
                     </span>
                     <span className="flex items-center gap-1">
                       <Flag className="w-4 h-4" />

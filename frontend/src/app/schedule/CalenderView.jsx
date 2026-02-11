@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Calendar, ChevronLeft, ChevronRight, Clock, Target, Activity, Plus } from "lucide-react";
 import { getSchedule } from "../dashboard/api/schedules.api"; // 👈 YOUR ORIGINAL API IMPORT
+import timezoneService from "@/utils/timezoneService.js";
 
 const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -54,20 +55,8 @@ export default function ProductivityCalendar() {
               ? new Date(item.end)
               : new Date(startDate.getTime() + 60 * 60 * 1000);
 
-            const start = `${startDate
-              .getHours()
-              .toString()
-              .padStart(2, "0")}:${startDate
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}`;
-            const end = `${endDate
-              .getHours()
-              .toString()
-              .padStart(2, "0")}:${endDate
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}`;
+            const start = timezoneService.formatAPIDateForDisplay(item.start, 'HH:mm');
+            const end = timezoneService.formatAPIDateForDisplay(item.end || endDate, 'HH:mm');
 
             return {
               title: item.title,

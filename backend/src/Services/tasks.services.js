@@ -2,6 +2,7 @@ import Task from "../models/tasks.model.js"
 import User from "../models/Users.models.js"
 import Schedule from "../models/schedule.model.js";
 import mongoose from "mongoose";
+import timezoneService from "../utils/timezoneService.js";
 
 export async function createTask(data) {
     const task = await Task.create(data);
@@ -25,49 +26,28 @@ export async function getTasksWithFilters(userId, filters) {
         $or: [{ createdBy: userId }, { assignedTo: userId }],
     };
 
-    // Get current time in IST (India Standard Time)
-    const now = new Date();
+    // Get current date range in IST using centralized service
+    const todayRange = timezoneService.getDayRangeUTC();
     
-    // Convert to IST - India is UTC+5:30
-    const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
-    const istNow = new Date(now.getTime() + istOffset);
-    
-    // Create day boundaries in IST
-    const startOfDay = new Date(istNow.getFullYear(), istNow.getMonth(), istNow.getDate(), 0, 0, 0, 0);
-    const endOfDay = new Date(istNow.getFullYear(), istNow.getMonth(), istNow.getDate(), 23, 59, 59, 999);
-    
-    // Convert back to UTC for database comparison (MongoDB stores in UTC)
-    const startOfDayUTC = new Date(startOfDay.getTime() - istOffset);
-    const endOfDayUTC = new Date(endOfDay.getTime() - istOffset);
-
-    console.log("🇮🇳 IST Date:", istNow.toDateString());
-    console.log("🌅 Start of day (UTC for DB):", startOfDayUTC.toISOString());
-    console.log("🌆 End of day (UTC for DB):", endOfDayUTC.toISOString());
+    console.log("🇮🇳 IST Date:", timezoneService.now().format('YYYY-MM-DD'));
+    console.log("🌅 Start of day (UTC for DB):", todayRange.startISOString);
+    console.log("🌆 End of day (UTC for DB):", todayRange.endISOString);
 
     if (filters.date === "today" || filters.range === "today") {
-        query.dueDate = { $gte: startOfDayUTC, $lte: endOfDayUTC };
+        query.dueDate = { $gte: todayRange.start, $lte: todayRange.end };
     }
 
     if (filters.range === "past") {
-        query.dueDate = { $lt: startOfDayUTC };
+        query.dueDate = { $lt: todayRange.start };
     }
 
     if (filters.range === "future") {
-        query.dueDate = { $gt: endOfDayUTC };
+        query.dueDate = { $gt: todayRange.end };
     }
 
     if(filters.date && filters.date !== "today"){
-        const d = new Date(filters.date);
-        
-        // Create IST boundaries for the specific date
-        const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
-        const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
-        
-        // Convert to UTC for database query
-        const startUTC = new Date(start.getTime() - istOffset);
-        const endUTC = new Date(end.getTime() - istOffset);
-        
-        query.dueDate = { $gte: startUTC, $lte: endUTC };
+        const specificDateRange = timezoneService.getDayRangeUTC(new Date(filters.date));
+        query.dueDate = { $gte: specificDateRange.start, $lte: specificDateRange.end };
     }
 
     if(filters.status) query.status = filters.status;
@@ -123,11 +103,8 @@ export async function MarkasDone(taskId) {
 
 export async function getAnalysisTask(userId) {
   
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-
-  const endOfToday = new Date();
-  endOfToday.setHours(23, 59, 59, 999);
+  // Get today's date range in IST using centralized service
+  const todayRange = timezoneService.getDayRangeUTC();
 
   /* =========================
      1. PENDING EVENTS (ALL)
@@ -158,13 +135,13 @@ export async function getAnalysisTask(userId) {
       { assignedTo: userId }
     ],
     status:"pending",
-    dueDate: { $gte: startOfToday, $lte: endOfToday },
+    dueDate: { $gte: todayRange.start, $lte: todayRange.end },
   });
 
   const pendingSchedulesToday = await Schedule.countDocuments({
     createdBy: userId,
     status: "pending",
-    start: { $gte: startOfToday, $lte: endOfToday },
+    start: { $gte: todayRange.start, $lte: todayRange.end },
   });
 
   const pendingEventsToday =
@@ -180,13 +157,13 @@ export async function getAnalysisTask(userId) {
       { assignedTo: userId }
     ],
     status: "completed",
-    updatedAt: { $gte: startOfToday, $lte: endOfToday },
+    updatedAt: { $gte: todayRange.start, $lte: todayRange.end },
   });
 
   const schedulesDoneToday = await Schedule.countDocuments({
     createdBy: userId,
     status: "completed",
-    updatedAt: { $gte: startOfToday, $lte: endOfToday },
+    updatedAt: { $gte: todayRange.start, $lte: todayRange.end },
   });
 
   const todaysDoneEvents =
@@ -202,13 +179,13 @@ export async function getAnalysisTask(userId) {
       { assignedTo: userId }
     ],
     status:"pending",
-    dueDate: { $lt: startOfToday },
+    dueDate: { $lt: todayRange.start },
   });
 
   const overdueSchedules = await Schedule.countDocuments({
     createdBy: userId,
     status: "pending",
-    start: { $lt: startOfToday },
+    start: { $lt: todayRange.start },
   });
 
   const overdueEvents =
@@ -234,8 +211,8 @@ export async function ShiftToTommorow(taskId){
     // Get current due date
     const currentDueDate = task.dueDate;
 
-    // Add one day (24 hours) to the current due date
-    const newDueDate = new Date(currentDueDate.getTime() + 24 * 60 * 60 * 1000);
+    // Add one day using centralized timezone service
+    const newDueDate = timezoneService.addDays(currentDueDate, 1);
 
     // Update the task's due date
     task.dueDate = newDueDate;

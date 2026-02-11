@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setReminders } from "@/store/reminders/slice";
 import { useEffect } from "react";
 import { getRemindersForUser } from "../api/reminders.api";
+import timezoneService from "@/utils/timezoneService.js";
 
 export default function RemindersList({ items = [] }) {
  
@@ -14,9 +15,8 @@ export default function RemindersList({ items = [] }) {
     <div className="overflow-y-auto max-h-[65vh] custom-scroll">
       <div className="space-y-3">
         {reminders.map((r) => {
-          const date = new Date(r.datetime);
-          const formattedDate = date.toLocaleDateString();
-          const formattedTime = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+          const formattedDate = timezoneService.formatAPIDateForDisplay(r.datetime, 'DD/MM/YYYY');
+          const formattedTime = timezoneService.formatAPIDateForDisplay(r.datetime, 'HH:mm');
 
           return (
             <div

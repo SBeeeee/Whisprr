@@ -5,6 +5,7 @@ import Modal from "@/components/Modal";
 import { createReminder } from "../api/reminders.api";
 import { createTask } from "../api/tasks.api";
 import Loader from "@/components/Loader";
+import timezoneService from "@/utils/timezoneService.js";
 
 export default function AddTaskModal({ open, onClose }) {
   const [step, setStep] = useState(0); // track which step we're on
@@ -25,13 +26,13 @@ export default function AddTaskModal({ open, onClose }) {
       setLoading(true);
 
       if (setReminder) {
-        const datetime = new Date(`${dueDate}T${reminderTime}:00`).toISOString();
+        const datetime = timezoneService.toISOString(`${dueDate}T${reminderTime}:00`);
         await createReminder({ task: description, datetime });
       } else {
         await createTask({
           title,
           description,
-          dueDate,
+          dueDate: timezoneService.toISOString(dueDate),
           priority,
           labels: labels ? labels.split(",").map((l) => l.trim()) : [],
           recurring,

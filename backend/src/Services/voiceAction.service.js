@@ -29,6 +29,7 @@ import {
 import { resolveTaskFromVoice} from "./voice TaskResolver.services.js";
 import Task from "../models/tasks.model.js";
 import Schedule from "../models/schedule.model.js";
+import timezoneService from "../utils/timezoneService.js";
 
 /**
  * Main voice action executor
@@ -133,7 +134,7 @@ export async function executeConfirmedAction(itemId, action, userId) {
         }
         
         const updated = await ShiftToTommorow(itemId);
-        const newDate = new Date(updated.dueDate).toLocaleDateString();
+        const newDate = timezoneService.formatForDisplay(updated.dueDate);
         
         return {
           success: true,
@@ -191,7 +192,7 @@ async function handleCreateTask(entities, userId) {
   };
   
   if (dueDate) {
-    taskData.dueDate = new Date(dueDate);
+    taskData.dueDate = timezoneService.parseToUTC(dueDate);
   }
   
   if (label) {
@@ -203,7 +204,7 @@ async function handleCreateTask(entities, userId) {
   return {
     success: true,
     action: "CREATE_TASK",
-    message: `Task "${title}" created successfully${dueDate ? ` for ${new Date(dueDate).toLocaleDateString()}` : ""}`,
+    message: `Task "${title}" created successfully${dueDate ? ` for ${timezoneService.formatForDisplay(dueDate)}` : ""}`,
     data: task,
   };
 }
@@ -240,7 +241,7 @@ async function handleMarkDone(keywords, userId) {
   return {
     success: true,
     action: "MARK_DONE",
-    message: `Task "${task.title}" marked as completed! 🎉`,
+    message: `Task "${task.title}" marked as completed! `,
     data: updatedTask,
   };
 }
@@ -274,7 +275,7 @@ async function handleShiftTomorrow(keywords, userId) {
   const task = tasks[0];
   const updatedTask = await ShiftToTommorow(task._id);
   
-  const newDate = new Date(updatedTask.dueDate).toLocaleDateString();
+  const newDate = timezoneService.formatForDisplay(updatedTask.dueDate);
   
   return {
     success: true,
@@ -291,9 +292,9 @@ async function handleGetTasks(entities, userId) {
   if (entities.priority) filters.priority = entities.priority;
   if (entities.label) filters.label = entities.label;
   
-  // Handle date filtering
+  // Handle date filtering using timezone service
   if (entities.dueDate) {
-    const dateStr = new Date(entities.dueDate).toISOString().split("T")[0];
+    const dateStr = timezoneService.formatForDisplay(entities.dueDate, 'YYYY-MM-DD');
     filters.date = dateStr;
   }
   
@@ -326,8 +327,8 @@ async function handleCreateSchedule(entities, userId) {
     throw new Error("Schedule title is required");
   }
   
-  // Calculate start and end times
-  let start = dueDate ? new Date(dueDate) : new Date();
+  // Calculate start and end times using timezone service
+  let start = dueDate ? timezoneService.parseToUTC(dueDate) : timezoneService.now().utc().toDate();
   let end = new Date(start);
   
   if (startTime) {
@@ -364,7 +365,7 @@ async function handleCreateSchedule(entities, userId) {
   return {
     success: true,
     action: "CREATE_SCHEDULE",
-    message: `Schedule "${title}" created for ${start.toLocaleString()}`,
+    message: `Schedule "${title}" created for ${timezoneService.formatForDisplay(start)}`,
     data: schedule,
   };
 }
@@ -447,7 +448,7 @@ async function handleGetSchedules(entities, userId) {
   if (entities.label) filters.label = entities.label;
   
   if (entities.dueDate) {
-    const dateStr = new Date(entities.dueDate).toISOString().split("T")[0];
+    const dateStr = timezoneService.formatForDisplay(entities.dueDate, 'YYYY-MM-DD');
     filters.date = dateStr;
   }
   

@@ -14,9 +14,12 @@ import TasksView from "./components/TasksView";
 import RemindersView from "./components/RemindersView";
 import ScratchView from "./components/ScratchView";
 import VoiceToTextDemo from "./components/VoiceToTextDemo";
+import timezoneService from "@/utils/timezoneService.js";
+import TimezoneSelector from "@/components/TimezoneSelector.jsx";
 
 export default function Page() {
   const username = "Alex";
+  const [userTimezone, setUserTimezone] = useState(timezoneService.getUserTimezone());
 
   // Demo data (you can replace with API)
   const [schedule, setSchedule] = useState([
@@ -45,7 +48,7 @@ export default function Page() {
 
   // Derived stats
   const stats = useMemo(() => {
-    const today = new Date().toISOString().slice(0,10);
+    const today = timezoneService.formatForAPI(new Date());
     const tasksToday = tasks.filter(t => t.date === today);
     const doneCount  = tasks.filter(t => t.done).length;
     const remindersToday = reminders.filter(r => r.date === today).length;
@@ -118,6 +121,17 @@ export default function Page() {
               >
                 <Calendar className="w-5 h-5" /> Add to Schedule
               </button>
+              {/* Timezone Selector */}
+              <div className="ml-4">
+                <TimezoneSelector 
+                  value={userTimezone}
+                  onChange={(timezone) => {
+                    setUserTimezone(timezone);
+                    timezoneService.setUserTimezone(timezone);
+                  }}
+                  className="w-64"
+                />
+              </div>
             </div>
           </div>
 

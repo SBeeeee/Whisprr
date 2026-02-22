@@ -1,19 +1,17 @@
 "use client";
 import { Calendar, Clock3, CheckCircle2, Flag } from "lucide-react";
 import { useSelector } from "react-redux";
+import timezoneService from "@/utils/timezoneService.js";
 
 export default function ScheduleTable({ onToggleDone, full = false }) {
   const { schedule } = useSelector((state) => state.schedules);
 
   const formatDate = (date) =>
-    date ? new Date(date).toLocaleDateString() : "N/A";
+    date ? timezoneService.formatAPIDateForDisplay(date, 'DD/MM/YYYY') : "N/A";
 
   const formatTime = (date) =>
     date
-      ? new Date(date).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
+      ? timezoneService.formatAPIDateForDisplay(date, 'HH:mm')
       : "N/A";
 
   return (

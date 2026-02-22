@@ -6,6 +6,7 @@ import { createReminder } from "../api/reminders.api";
 import { createSchedule } from "../api/schedules.api";
 import Loader from "@/components/Loader";
 import timezoneService from "@/utils/timezoneService.js";
+import toast from "react-hot-toast";
 
 export default function AddScheduleModal({ open, onClose }) {
   const [step, setStep] = useState(0);
@@ -44,8 +45,9 @@ export default function AddScheduleModal({ open, onClose }) {
           task: title,
           datetime: startDateTime,
         });
+        toast.success("✅ Reminder created successfully!");
       } else {
-        await createSchedule({
+        const result = await createSchedule({
           title,
           description,
           start: startDateTime,
@@ -53,6 +55,9 @@ export default function AddScheduleModal({ open, onClose }) {
           labels: labelsArray,
           priority,
         });
+        if (result.success !== false) {
+          toast.success("✅ Schedule created successfully!");
+        }
       }
 
       resetForm();

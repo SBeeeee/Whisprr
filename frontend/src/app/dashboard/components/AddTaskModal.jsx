@@ -6,6 +6,7 @@ import { createReminder } from "../api/reminders.api";
 import { createTask } from "../api/tasks.api";
 import Loader from "@/components/Loader";
 import timezoneService from "@/utils/timezoneService.js";
+import toast from "react-hot-toast";
 
 export default function AddTaskModal({ open, onClose }) {
   const [step, setStep] = useState(0); // track which step we're on
@@ -28,8 +29,9 @@ export default function AddTaskModal({ open, onClose }) {
       if (setReminder) {
         const datetime = timezoneService.toISOString(`${dueDate}T${reminderTime}:00`);
         await createReminder({ task: description, datetime });
+        toast.success("✅ Reminder created successfully!");
       } else {
-        await createTask({
+        const result = await createTask({
           title,
           description,
           dueDate: timezoneService.toISOString(dueDate),
@@ -37,6 +39,9 @@ export default function AddTaskModal({ open, onClose }) {
           labels: labels ? labels.split(",").map((l) => l.trim()) : [],
           recurring,
         });
+        if (result.success) {
+          toast.success("✅ Task created successfully!");
+        }
       }
 
       resetForm();

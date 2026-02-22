@@ -5,6 +5,7 @@ import Modal from "@/components/Modal";
 import { useParams } from "next/navigation";
 import { getAllUsers } from "@/app/auth/api.js/user.api";
 import { createTask } from "@/app/dashboard/api/tasks.api";
+import toast from "react-hot-toast";
 
 export default function AddTaskModal({ open, onClose }) {
   const { teamId } = useParams();
@@ -60,6 +61,7 @@ export default function AddTaskModal({ open, onClose }) {
     setLoading(false);
 
     if (res.success) {
+      toast.success("✅ Task created successfully!");
       resetForm();
       onClose();
     }

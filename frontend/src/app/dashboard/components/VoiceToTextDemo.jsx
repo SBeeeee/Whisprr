@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Mic, MicOff, Send, X, Loader2 } from "lucide-react";
 import axiosInstance from "@/utils/axiosInstance";
+import toast from "react-hot-toast";
 
 // Card Component
 function Card({ children, className = "" }) {
@@ -75,14 +76,14 @@ export default function VoiceCommandInterface() {
         setShowConfirmation(true);
       } else {
         // Success
-        alert(`✅ ${data.message}`);
+        toast.success(data.message);
         console.log("VOICE RESULT:", data);
         setTranscript("");
       }
     } catch (err) {
       console.error(err);
       const errorMsg = err.response?.data?.message || err.message;
-      alert("❌ Error: " + errorMsg);
+      toast.error("❌ Error: " + errorMsg);
     } finally {
       setLoading(false);
     }
@@ -104,14 +105,14 @@ export default function VoiceCommandInterface() {
         throw new Error(data?.message || "Confirmation failed");
       }
 
-      alert(`✅ ${data.message}`);
+      toast.error(`✅ ${data.message}`);
       setShowConfirmation(false);
       setConfirmationData(null);
       setTranscript("");
     } catch (err) {
       console.error(err);
       const errorMsg = err.response?.data?.message || err.message;
-      alert("❌ Error: " + errorMsg);
+      toast.error("❌ Error: " + errorMsg);
     } finally {
       setLoading(false);
     }
@@ -125,7 +126,7 @@ export default function VoiceCommandInterface() {
       !("webkitSpeechRecognition" in window) &&
       !("SpeechRecognition" in window)
     ) {
-      alert("Speech Recognition not supported in your browser");
+      toast.error("Speech Recognition not supported in your browser");
       return;
     }
 
@@ -151,7 +152,7 @@ export default function VoiceCommandInterface() {
     recognition.onerror = (e) => {
       console.error("Speech error:", e);
       setListening(false);
-      alert("Voice recognition error. Please try again.");
+      toast.error("Voice recognition error. Please try again.");
     };
 
     recognition.onend = () => {

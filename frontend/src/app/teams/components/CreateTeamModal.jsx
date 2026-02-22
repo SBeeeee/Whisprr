@@ -5,6 +5,7 @@ import Modal from "@/components/Modal"; // adjust path if needed
 import { createTeam } from "../api/teams.api";
 import { useDispatch } from "react-redux";
 import { setTeamLoading } from "@/store/teams/slice";
+import toast from "react-hot-toast";
 
 export default function CreateTeamModal({ open, onClose }) {
   const dispatch = useDispatch();
@@ -30,7 +31,7 @@ export default function CreateTeamModal({ open, onClose }) {
     if (res.success) {
       setName("");
       setDescription("");
-      alert("Team created successfully!");
+      toast.success("Team created successfully!");
       onClose();
     }
   };

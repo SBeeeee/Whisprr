@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setContent, setScratchLoading } from "@/store/scratchpad/slice";
 import { createScrat } from "../api/scratchpad.api";
 import Loader from "@/components/Loader";
+import toast from "react-hot-toast";
 
 export default function Scratchpad() {
   const dispatch = useDispatch();
@@ -17,10 +18,10 @@ export default function Scratchpad() {
         setScratchLoading({ loading: true, type: "save" })
       );
       await createScrat({ id, content });
-      alert("✅ Scratchpad saved!");
+      toast.success("✅ Scratchpad saved!");
     } catch (error) {
       console.error("❌ Save failed:", error);
-      alert("Failed to save scratchpad");
+      toast.error("Failed to save scratchpad");
     } finally {
       dispatch(
         setScratchLoading({ loading: false, type: null })

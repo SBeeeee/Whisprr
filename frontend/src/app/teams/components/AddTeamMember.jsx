@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
 import { useParams } from "next/navigation";
+import toast from "react-hot-toast";
 
 import { getAllUsers } from "@/app/auth/api.js/user.api";
 import { addmembertoTeam } from "../api/teams.api";
@@ -45,7 +46,7 @@ export default function AddTeamMember({ open, onClose }) {
       });
 
       if (res.success) {
-        alert("Member added successfully");
+        toast.success("Member added successfully");
         setSelectedUser(null);
         setSearch("");
         setRole("member");

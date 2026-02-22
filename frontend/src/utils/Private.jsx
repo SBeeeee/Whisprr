@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { useEffect,useState } from "react"
 import { checkAuth } from "./checkAuth"
 import Loader from "@/components/Loader"
+import toast from "react-hot-toast"
 
 export default function PrivateRoute({children}){
     const {user} =useSelector((state)=>state.user);
@@ -21,7 +22,7 @@ export default function PrivateRoute({children}){
               if (!user || Object.keys(user).length === 0) {
                 const fetchedUser = await checkAuth(dispatch);
                 if (!fetchedUser) {
-                  alert("please login")
+                  toast.error("please login")
                   router.replace("/auth/login");
                   return;
                 }

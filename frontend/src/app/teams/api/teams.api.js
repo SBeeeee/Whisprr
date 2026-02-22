@@ -1,11 +1,12 @@
 import axiosInstance from "@/utils/axiosInstance";
+import toast from "react-hot-toast";
 
 const handleRequest = async (requestFn) => {
   try {
     const { data } = await requestFn();
     return { success: true, data };
   } catch (error) {
-    alert(error?.response?.data?.error || error?.message || "Something went wrong");
+    toast.error(error?.response?.data?.error || error?.message || "Something went wrong");
 
     return {
       success: false,

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 import { Flag, Calendar } from "lucide-react";
+import toast from "react-hot-toast";
 
 import Card from "@/components/Card";
 import Loader from "@/components/Loader";
@@ -85,7 +86,7 @@ export default function KanbanBoard() {
     // ❌ Rollback on failure
     if (!res.success) {
       dispatch(setKanbanTasks(previousTasks));
-      alert("Failed to update task status");
+      toast.success("Failed to update task status");
     }
   };
 
